@@ -1,0 +1,40 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import AnimeDetails from './pages/AnimeDetails';
+import MyPurchases from './pages/MyPurchases';
+import AdminDashboard from './pages/AdminDashboard';
+import Navbar from './components/Navbar';
+import Player from './pages/Player';
+
+const ProtectedRoute = ({ children, adminOnly = false }) => {
+    const { user, loading } = useAuth();
+    if (loading) return <div>Loading...</div>;
+    if (!user) return <Navigate to="/login" />;
+    if (adminOnly && user.role !== 'admin') return <Navigate to="/" />;
+    return children;
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/anime/:id" element={<AnimeDetails />} />
+          <Route path="/my-purchases" element={<ProtectedRoute><MyPurchases /></ProtectedRoute>} />
+          <Route path="/player/:animeId/:seasonIndex/:episodeIndex" element={<ProtectedRoute><Player /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
+}
+
+export default App;
