@@ -263,21 +263,21 @@ const Home = () => {
                 .short-video-container iframe { width: 100%; height: 100%; }
 
                 @media (max-width: 768px) {
-                    .hero-carousel { height: 90vh; }
-                    .hero-content { padding-top: 15vh; }
-                    .hero-content h1 { font-size: 2.5rem; text-align: center; }
-                    .hero-content p { font-size: 1rem; text-align: center; -webkit-line-clamp: 4; line-height: 1.6; }
-                    .hero-btns { flex-direction: column; width: 100%; align-items: stretch; margin-top: 30px; gap: 12px; }
-                    .hero-btns button { width: 100%; justify-content: center; padding: 15px; }
+                    .hero-carousel { height: 95vh; }
+                    .hero-content { padding: 0 5%; padding-top: 20vh; }
+                    .hero-content h1 { font-size: 2.2rem; text-align: left; }
+                    .hero-content p { font-size: 0.95rem; text-align: left; -webkit-line-clamp: 5; line-height: 1.5; margin-bottom: 25px; }
+                    .hero-btns { flex-direction: column; width: 100%; align-items: stretch; margin-top: 20px; gap: 10px; }
+                    .hero-btns button { width: 100%; justify-content: center; padding: 12px; font-size: 0.9rem; }
                     
-                    .main-content { margin-top: -100px; padding-top: 40px; }
-                    .row-title { font-size: 1.4rem; }
-                    .anime-card { flex: 0 0 160px; }
-                    .anime-card img { height: 240px; }
-                    .anime-card-info { opacity: 1; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
-                    .anime-card-info h3 { font-size: 0.9rem; }
+                    .main-content { margin-top: 0; padding-top: 20px; }
+                    .row-title { font-size: 1.25rem; font-weight: 800; }
+                    .anime-card { flex: 0 0 140px; }
+                    .anime-card img { height: 210px; }
+                    .anime-card-info { opacity: 1; padding: 10px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); }
+                    .anime-card-info h3 { font-size: 0.8rem; }
                     
-                    .carousel-indicators { bottom: 250px; left: 50%; transform: translateX(-50%); }
+                    .carousel-indicators { bottom: 280px; left: 5%; transform: none; }
                 }
             `}</style>
         </div>

@@ -177,12 +177,13 @@ const Navbar = () => {
                     font-size: 0.8rem;
                 }
                 @media (max-width: 768px) {
-                    .navbar { height: 60px; padding: 0 15px; }
-                    .logo { font-size: 1.4rem; margin-right: 15px; }
-                    .nav-links { gap: 12px; }
-                    .nav-links a { font-size: 0.75rem; }
-                    .nav-right { gap: 15px; }
-                    .search-box input { width: 100px; }
+                    .navbar { height: 60px; padding: 0 10px; }
+                    .logo { font-size: 1.1rem; margin-right: 10px; letter-spacing: -0.5px; }
+                    .nav-links { gap: 8px; }
+                    .nav-links a { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
+                    .nav-right { gap: 10px; }
+                    .nav-icon { width: 16px; }
+                    .search-box input { width: 80px; font-size: 0.8rem; }
                 }
             `}</style>
         </nav>
