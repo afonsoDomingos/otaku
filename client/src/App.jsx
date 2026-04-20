@@ -10,6 +10,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
 import Player from './pages/Player';
 import Mangas from './pages/Mangas';
+import MangaDetails from './pages/MangaDetails';
+import MangaReader from './pages/MangaReader';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
     const { user, loading } = useAuth();
@@ -30,6 +32,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/mangas" element={<Mangas />} />
+            <Route path="/manga/:id" element={<MangaDetails />} />
+            <Route path="/manga-reader/:mangaId/:chapterIndex" element={<ProtectedRoute><MangaReader /></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/anime/:id" element={<AnimeDetails />} />

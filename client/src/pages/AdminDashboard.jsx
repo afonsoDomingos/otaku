@@ -11,8 +11,11 @@ const AdminDashboard = () => {
     const [stats, setStats] = useState({ pending: 0, totalSales: 0, revenue: 0, approvedCount: 0 });
     
     // Form states
-    const [newAnime, setNewAnime] = useState({ title: '', description: '', category: 'Ação', thumbnail: '', seasons: [] });
-    const [newManga, setNewManga] = useState({ title: '', description: '', category: 'Shonen', thumbnail: '', chapters: [] });
+    const [newAnime, setNewAnime] = useState({ 
+        title: '', category: '', description: '', thumbnail: '', 
+        seasons: [{ title: 'Temporada 1', price: 100, episodes: [{ title: 'Episódio 1', videoUrl: '' }] }] 
+    });
+    const [newManga, setNewManga] = useState({ title: '', description: '', category: 'Shonen', thumbnail: '', price: 25, chapters: [] });
     const [newShort, setNewShort] = useState({ title: '', url: '' });
     const [uploading, setUploading] = useState(false);
 
