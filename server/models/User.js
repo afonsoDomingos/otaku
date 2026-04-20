@@ -14,8 +14,12 @@ userSchema.pre('save', async function() {
     this.password = await bcrypt.hash(this.password, 10);
 });
 
-userSchema.methods.comparePassword = function(password) {
-    return bcrypt.compare(password, this.password);
+userSchema.methods.comparePassword = async function(candidatePassword) {
+    try {
+        return await bcrypt.compare(candidatePassword, this.password);
+    } catch (error) {
+        throw new Error('Falha na verificação de senha');
+    }
 };
 
 module.exports = mongoose.model('User', userSchema);
