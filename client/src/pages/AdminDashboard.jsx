@@ -6,23 +6,29 @@ const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('purchases');
     const [purchases, setPurchases] = useState([]);
     const [animes, setAnimes] = useState([]);
-    const [stats, setStats] = useState({ pending: 0, total: 0 });
+    const [mangas, setMangas] = useState([]);
+    const [stats, setStats] = useState({ pending: 0, totalSales: 0, revenue: 0, approvedCount: 0 });
     
     // Form state for new anime
     const [newAnime, setNewAnime] = useState({
         title: '', description: '', category: 'Ação', thumbnail: '', seasons: []
     });
+    const [newManga, setNewManga] = useState({
+        title: '', description: '', category: 'Shonen', thumbnail: '', chapters: []
+    });
     const [uploading, setUploading] = useState(false);
 
     const fetchData = async () => {
-        const [pRes, aRes] = await Promise.all([
+        const [pRes, aRes, mRes] = await Promise.all([
             API.get('/purchases/admin'),
-            API.get('/animes')
+            API.get('/animes'),
+            API.get('/mangas')
         ]);
         setPurchases(pRes.data);
         setAnimes(aRes.data);
+        setMangas(mRes.data);
         const approvedPurchases = pRes.data.filter(p => p.status === 'approved');
-        const revenue = pRes.data.reduce((acc, p) => p.status === 'approved' ? acc + (p.pricePaid || 0) : acc, 0);
+        const revenue = pRes.data.reduce((acc, p) => p.status === 'approved' ? acc + (p.price || 0) : acc, 0);
         
         setStats({
             pending: pRes.data.filter(p => p.status === 'pending').length,
@@ -101,6 +107,7 @@ const AdminDashboard = () => {
             <div className="admin-tabs">
                 <button className={activeTab === 'purchases' ? 'active' : ''} onClick={() => setActiveTab('purchases')}>Vendas</button>
                 <button className={activeTab === 'catalog' ? 'active' : ''} onClick={() => setActiveTab('catalog')}>Gerenciar Catálogo</button>
+                <button className={activeTab === 'mangas' ? 'active' : ''} onClick={() => setActiveTab('mangas')}>Gerenciar Mangás</button>
             </div>
 
             {activeTab === 'purchases' ? (

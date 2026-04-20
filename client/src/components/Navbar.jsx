@@ -25,6 +25,7 @@ const Navbar = () => {
                 <Link to="/" className="logo">OTAKUZONE<span>FLIX</span></Link>
                 <div className="nav-links">
                     <Link to="/">Início</Link>
+                    <Link to="/mangas">Mangás</Link>
                     {user && <Link to="/my-purchases">Minhas Compras</Link>}
                     {user?.role === 'admin' && <Link to="/admin">Admin</Link>}
                 </div>

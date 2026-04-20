@@ -20,6 +20,7 @@ mongoose.connect(process.env.MONGO_URI)
 const apiRouter = express.Router();
 apiRouter.use('/auth', require('./routes/auth'));
 apiRouter.use('/animes', require('./routes/animes'));
+apiRouter.use('/mangas', require('./routes/mangas'));
 apiRouter.use('/purchases', require('./routes/purchases'));
 
 app.use('/api', apiRouter);

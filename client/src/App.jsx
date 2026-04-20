@@ -9,6 +9,7 @@ import MyPurchases from './pages/MyPurchases';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
 import Player from './pages/Player';
+import Mangas from './pages/Mangas';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
     const { user, loading } = useAuth();
@@ -28,6 +29,7 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/mangas" element={<Mangas />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/anime/:id" element={<AnimeDetails />} />
