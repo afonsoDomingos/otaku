@@ -8,22 +8,32 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Cache DB connection for serverless environment
+let dbError = null;
 let isConnected = false;
+
 const connectDB = async () => {
     if (isConnected) return;
     try {
+        if (!process.env.MONGO_URI) {
+            throw new Error("MONGO_URI is undefined. Vercel environment variables are missing.");
+        }
         await mongoose.connect(process.env.MONGO_URI);
         isConnected = true;
         console.log('Connected to MongoDB Atlas');
     } catch (err) {
+        dbError = err.message;
         console.error('MongoDB connection error:', err);
     }
 };
-connectDB();
+
+// Vercel Serverless requires awaiting connection or middleware
+app.use(async (req, res, next) => {
+    await connectDB();
+    next();
+});
 
 // Routes
 const apiRouter = express.Router();
@@ -33,7 +43,13 @@ apiRouter.use('/mangas', require('./routes/mangas'));
 apiRouter.use('/shorts', require('./routes/shorts'));
 apiRouter.use('/purchases', require('./routes/purchases'));
 apiRouter.use('/interviews', require('./routes/interviews'));
-apiRouter.get('/ping', (req, res) => res.json({ message: 'Server is alive', db: mongoose.connection.readyState }));
+
+apiRouter.get('/ping', (req, res) => res.json({ 
+    message: 'Server is alive', 
+    dbState: mongoose.connection.readyState,
+    dbError: dbError,
+    hasMongoUri: !!process.env.MONGO_URI
+}));
 
 app.use('/api', apiRouter);
 app.use('/', apiRouter);
