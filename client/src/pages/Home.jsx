@@ -22,12 +22,14 @@ const Home = () => {
                 API.get('/animes'),
                 API.get('/shorts')
             ]);
-            setAnimes(aRes.data || []);
-            setShorts(sRes.data || []);
+            const animesData = Array.isArray(aRes.data) ? aRes.data : [];
+            const shortsData = Array.isArray(sRes.data) ? sRes.data : [];
+            setAnimes(animesData);
+            setShorts(shortsData);
             
-            const cats = [...new Set((aRes.data || []).map(a => a.category).filter(Boolean))];
+            const cats = [...new Set(animesData.map(a => a.category).filter(Boolean))];
             setCategories(cats);
-            setFeaturedAnimes((aRes.data || []).slice(0, 3));
+            setFeaturedAnimes(animesData.slice(0, 3));
             setLoading(false);
         } catch (error) {
             console.error("Error fetching data", error);
