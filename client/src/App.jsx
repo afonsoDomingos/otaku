@@ -18,21 +18,25 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
     return children;
 };
 
+import { SearchProvider } from './context/SearchContext';
+
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/anime/:id" element={<AnimeDetails />} />
-          <Route path="/my-purchases" element={<ProtectedRoute><MyPurchases /></ProtectedRoute>} />
-          <Route path="/player/:animeId/:seasonIndex/:episodeIndex" element={<ProtectedRoute><Player /></ProtectedRoute>} />
-          <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
-        </Routes>
-      </Router>
+      <SearchProvider>
+        <Router>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/anime/:id" element={<AnimeDetails />} />
+            <Route path="/my-purchases" element={<ProtectedRoute><MyPurchases /></ProtectedRoute>} />
+            <Route path="/player/:animeId/:seasonIndex/:episodeIndex" element={<ProtectedRoute><Player /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+          </Routes>
+        </Router>
+      </SearchProvider>
     </AuthProvider>
   );
 }

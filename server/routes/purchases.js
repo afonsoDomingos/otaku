@@ -27,11 +27,12 @@ const upload = multer({ storage });
 // Create Purchase (Upload proof to Cloudinary)
 router.post('/', protect, upload.single('proof'), async (req, res) => {
     try {
-        const { animeId, seasonId } = req.body;
+        const { animeId, seasonId, price } = req.body;
         const purchase = await Purchase.create({
             user: req.user._id,
             anime: animeId,
             season: seasonId,
+            price: Number(price) || 0,
             paymentProof: req.file.path, // This will be the Cloudinary URL
             status: 'pending'
         });

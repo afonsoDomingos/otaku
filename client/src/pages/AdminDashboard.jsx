@@ -21,9 +21,14 @@ const AdminDashboard = () => {
         ]);
         setPurchases(pRes.data);
         setAnimes(aRes.data);
+        const approvedPurchases = pRes.data.filter(p => p.status === 'approved');
+        const revenue = pRes.data.reduce((acc, p) => p.status === 'approved' ? acc + (p.pricePaid || 0) : acc, 0);
+        
         setStats({
             pending: pRes.data.filter(p => p.status === 'pending').length,
-            total: pRes.data.length
+            totalSales: pRes.data.length,
+            revenue: revenue,
+            approvedCount: approvedPurchases.length
         });
     };
 
@@ -102,7 +107,9 @@ const AdminDashboard = () => {
                 <>
                     <div className="stats-row">
                         <div className="stat-card"><h3>Pedidos Pendentes</h3><p>{stats.pending}</p></div>
-                        <div className="stat-card"><h3>Total de Vendas</h3><p>{stats.total}</p></div>
+                        <div className="stat-card"><h3>Total de Vendas</h3><p>{stats.totalSales}</p></div>
+                        <div className="stat-card revenue"><h3>Faturamento</h3><p>MT {stats.revenue?.toLocaleString()}</p></div>
+                        <div className="stat-card approved"><h3>Aprovados</h3><p>{stats.approvedCount}</p></div>
                     </div>
 
                     <h2 style={{margin: '40px 0 20px'}}>Gerenciar Comprovativos</h2>
@@ -229,7 +236,8 @@ const AdminDashboard = () => {
                 .stats-row { display: flex; gap: 20px; }
                 .stat-card { background: var(--surface); padding: 20px; border-radius: 8px; flex: 1; border-left: 5px solid var(--primary); }
                 .stat-card h3 { font-size: 0.9rem; color: #aaa; margin-bottom: 10px; }
-                .stat-card p { font-size: 2rem; font-weight: bold; }
+                .stat-card.revenue { border-left-color: #4caf50; }
+                .stat-card.approved { border-left-color: #2196f3; }
                 
                 .purchases-table { background: var(--surface); border-radius: 8px; overflow: hidden; margin-top: 20px; }
                 table { width: 100%; border-collapse: collapse; }

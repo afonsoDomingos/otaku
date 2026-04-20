@@ -4,11 +4,19 @@ import { Play, Info, Flame } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 
+import { useSearch } from '../context/SearchContext';
+
 const Home = () => {
+    const { searchQuery } = useSearch();
     const [animes, setAnimes] = useState([]);
     const [categories, setCategories] = useState([]);
     const [featured, setFeatured] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const filteredAnimes = animes.filter(anime => 
+        anime.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        anime.category.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     useEffect(() => {
         const fetchData = async () => {
@@ -72,39 +80,62 @@ const Home = () => {
             )}
 
             <div className="main-content">
-                {/* Novidades Row */}
-                <div className="row-container">
-                    <h2 className="row-title">Novidades no OtakuZone</h2>
-                    <div className="row-scroll">
-                        {animes.slice().reverse().slice(0, 6).map(anime => (
-                            <Link to={`/anime/${anime._id}`} key={`new-${anime._id}`} className="anime-card">
-                                <img src={anime.thumbnail} alt={anime.title} />
-                                <div className="anime-card-info">
-                                    <h3>{anime.title}</h3>
-                                    <p>{anime.seasons.length} Temporadas</p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Category Rows */}
-                {categories.map(cat => (
-                    <div key={cat} className="row-container">
-                        <h2 className="row-title">{cat}</h2>
-                        <div className="row-scroll">
-                            {animes.filter(a => a.category === cat).map(anime => (
-                                <Link to={`/anime/${anime._id}`} key={anime._id} className="anime-card">
-                                    <img src={anime.thumbnail} alt={anime.title} />
-                                    <div className="anime-card-info">
-                                        <h3>{anime.title}</h3>
-                                        <p>{anime.seasons.length} Temporadas</p>
-                                    </div>
-                                </Link>
-                            ))}
+                {searchQuery ? (
+                    <div className="search-results">
+                        <h2 className="row-title">Resultados para "{searchQuery}"</h2>
+                        <div className="results-grid">
+                            {filteredAnimes.length > 0 ? (
+                                filteredAnimes.map(anime => (
+                                    <Link to={`/anime/${anime._id}`} key={`search-${anime._id}`} className="anime-card">
+                                        <img src={anime.thumbnail} alt={anime.title} />
+                                        <div className="anime-card-info">
+                                            <h3>{anime.title}</h3>
+                                            <p>{anime.seasons.length} Temporadas</p>
+                                        </div>
+                                    </Link>
+                                ))
+                            ) : (
+                                <p style={{paddingLeft: '4%', color: '#757575'}}>Nenhum anime encontrado.</p>
+                            )}
                         </div>
                     </div>
-                ))}
+                ) : (
+                    <>
+                        {/* Novidades Row */}
+                        <div className="row-container">
+                            <h2 className="row-title">Novidades no OtakuZone</h2>
+                            <div className="row-scroll">
+                                {animes.slice().reverse().slice(0, 6).map(anime => (
+                                    <Link to={`/anime/${anime._id}`} key={`new-${anime._id}`} className="anime-card">
+                                        <img src={anime.thumbnail} alt={anime.title} />
+                                        <div className="anime-card-info">
+                                            <h3>{anime.title}</h3>
+                                            <p>{anime.seasons.length} Temporadas</p>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Category Rows */}
+                        {categories.map(cat => (
+                            <div key={cat} className="row-container">
+                                <h2 className="row-title">{cat}</h2>
+                                <div className="row-scroll">
+                                    {animes.filter(a => a.category === cat).map(anime => (
+                                        <Link to={`/anime/${anime._id}`} key={anime._id} className="anime-card">
+                                            <img src={anime.thumbnail} alt={anime.title} />
+                                            <div className="anime-card-info">
+                                                <h3>{anime.title}</h3>
+                                                <p>{anime.seasons.length} Temporadas</p>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </>
+                )}
             </div>
 
             <Footer />
@@ -112,6 +143,16 @@ const Home = () => {
             <style>{`
                 .home-page {
                     background-color: #141414;
+                }
+                .search-results {
+                    padding-top: 100px;
+                    min-height: 100vh;
+                }
+                .results-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                    gap: 20px;
+                    padding: 20px 4%;
                 }
                 .hero {
                     height: 85vh;
