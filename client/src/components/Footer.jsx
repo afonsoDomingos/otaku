@@ -14,7 +14,7 @@ const Footer = () => {
                 </div>
                 <div className="footer-links">
                     <div className="footer-column">
-                        <p>Dúvidas? Ligue 800 800 800</p>
+                        <p>Dúvidas? Ligue 84 525 4253</p>
                         <a href="#">FAQ</a>
                         <a href="#">Relações com investidores</a>
                         <a href="#">Formas de assistir</a>

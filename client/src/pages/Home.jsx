@@ -56,25 +56,40 @@ const Home = () => {
 
     return (
         <div className="home-page">
-            {featured && (
-                <div className="hero" style={{ 
-                    backgroundImage: `linear-gradient(to top, #141414 5%, transparent 40%), linear-gradient(to right, rgba(0,0,0,0.8) 30%, transparent 70%), url(${featured.thumbnail})` 
-                }}>
-                    <div className="hero-content">
-                        <div className="featured-badge">
-                            <Flame size={16} fill="#E50914" color="#E50914" />
-                            <span>EM DESTAQUE</span>
+            {featuredAnimes.length > 0 && (
+                <div className="hero-carousel">
+                    {featuredAnimes.map((anime, index) => (
+                        <div 
+                            key={anime._id} 
+                            className={`hero-slide ${index === activeHero ? 'active' : ''}`}
+                            style={{ backgroundImage: `linear-gradient(to top, #141414, transparent 50%), linear-gradient(to right, #141414 30%, transparent), url(${anime.thumbnail})` }}
+                        >
+                            <div className="hero-content">
+                                <div className="featured-badge">
+                                    <Flame size={16} fill="#E50914" color="#E50914" />
+                                    <span>EM DESTAQUE</span>
+                                </div>
+                                <h1>{anime.title}</h1>
+                                <p>{anime.description}</p>
+                                <div className="hero-btns">
+                                    <button className="btn-primary" onClick={() => navigate(`/anime/${anime._id}`)} style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                        <Play fill="white" size={20} /> Assistir Agora
+                                    </button>
+                                    <button className="btn-secondary" onClick={() => navigate(`/anime/${anime._id}`)} style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                        <Info size={20} /> Mais Informações
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <h1>{featured.title}</h1>
-                        <p>{featured.description}</p>
-                        <div className="hero-btns">
-                            <Link to={`/anime/${featured._id}`} className="btn-primary" style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                <Play fill="white" /> Assitir Agora
-                            </Link>
-                            <button className="btn-secondary" style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                <Info /> Mais Informações
-                            </button>
-                        </div>
+                    ))}
+                    <div className="carousel-indicators">
+                        {featuredAnimes.map((_, i) => (
+                            <div 
+                                key={i} 
+                                className={`indicator ${i === activeHero ? 'active' : ''}`}
+                                onClick={() => setActiveHero(i)}
+                            ></div>
+                        ))}
                     </div>
                 </div>
             )}
@@ -141,75 +156,47 @@ const Home = () => {
             <Footer />
 
             <style>{`
-                .home-page {
-                    background-color: #141414;
+                .home-page { background: #141414; min-height: 100vh; color: white; }
+                
+                /* Cinematic Hero Carousel */
+                .hero-carousel { position: relative; height: 90vh; overflow: hidden; margin-bottom: -150px; }
+                .hero-slide {
+                    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                    background-size: cover; background-position: center 25%;
+                    display: flex; align-items: center; padding: 0 4%;
+                    opacity: 0; visibility: hidden; transition: opacity 1.5s ease-in-out;
+                    z-index: 1;
                 }
-                .search-results {
-                    padding-top: 100px;
-                    min-height: 100vh;
+                .hero-slide.active { opacity: 1; visibility: visible; z-index: 2; animation: cinematic-zoom 30s linear forwards; }
+                
+                @keyframes cinematic-zoom {
+                    from { transform: scale(1.0); }
+                    to { transform: scale(1.15); }
                 }
-                .results-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                    gap: 20px;
-                    padding: 20px 4%;
-                }
-                .hero {
-                    height: 85vh;
-                    background-size: cover;
-                    background-position: center 20%;
-                    display: flex;
-                    align-items: center;
-                    padding: 0 4%;
-                }
-                .featured-badge {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    background: rgba(0,0,0,0.5);
-                    width: fit-content;
-                    padding: 4px 12px;
-                    border-radius: 4px;
-                    margin-bottom: 15px;
-                    font-size: 0.8rem;
-                    font-weight: bold;
-                    letter-spacing: 1px;
-                }
-                .hero-content {
-                    max-width: 650px;
-                    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-                }
-                .hero-content h1 {
-                    font-size: clamp(2.5rem, 8vw, 4.5rem);
-                    margin-bottom: 20px;
-                    line-height: 1.1;
-                    font-weight: 800;
-                }
-                .hero-content p {
-                    font-size: 1.2rem;
-                    margin-bottom: 30px;
-                    color: #fff;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 3;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    max-width: 500px;
-                }
-                .hero-btns {
-                    display: flex;
-                    gap: 15px;
-                }
-                .main-content {
-                    position: relative;
-                    margin-top: -100px;
-                    z-index: 2;
-                    background: linear-gradient(transparent, #141414 10%);
-                    padding-bottom: 100px;
-                }
+
+                .hero-content { max-width: 700px; z-index: 5; transform: translateY(30px); transition: transform 0.8s ease-out 0.4s, opacity 0.8s ease-out 0.4s; opacity: 0; }
+                .hero-slide.active .hero-content { transform: translateY(0); opacity: 1; text-shadow: 2px 2px 15px rgba(0,0,0,0.9); }
+                
+                .featured-badge { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: 4px; margin-bottom: 20px; border-left: 3px solid #E50914; width: fit-content; font-size: 0.85rem; font-weight: 700; letter-spacing: 1.5px; }
+                .hero-content h1 { font-size: clamp(3rem, 10vw, 5rem); font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+                .hero-content p { font-size: 1.25rem; line-height: 1.4; color: #f3f3f3; margin-bottom: 30px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; max-width: 600px; }
+                .hero-btns { display: flex; gap: 15px; }
+
+                .carousel-indicators { position: absolute; bottom: 200px; left: 4%; display: flex; gap: 12px; z-index: 10; }
+                .indicator { width: 35px; height: 3px; background: rgba(255,255,255,0.25); cursor: pointer; border-radius: 2px; transition: 0.4s; }
+                .indicator.active { background: #E50914; width: 60px; }
+
+                .main-content { position: relative; z-index: 5; padding-top: 20px; padding-bottom: 100px; }
+                .row-container { padding-left: 4%; margin-bottom: 40px; }
+                .row-title { font-size: 1.6rem; margin-bottom: 20px; font-weight: 700; color: #e5e5e5; }
+                .row-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
+                .row-scroll::-webkit-scrollbar { display: none; }
+
                 @media (max-width: 768px) {
-                    .hero { height: 70vh; }
-                    .hero-content h1 { font-size: 2.5rem; }
-                    .main-content { margin-top: -50px; }
+                    .hero-carousel { height: 75vh; }
+                    .hero-content h1 { font-size: 2.8rem; }
+                    .hero-content p { font-size: 1.1rem; -webkit-line-clamp: 2; }
+                    .carousel-indicators { bottom: 180px; }
                 }
             `}</style>
         </div>

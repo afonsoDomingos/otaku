@@ -159,7 +159,7 @@ const AnimeDetails = () => {
                         <div className="payment-steps">
                             <div className="step">
                                 <strong>1. Transferência/M-Pesa</strong>
-                                <p>Número: 84 123 4567 (Nome: OtakuZone Intl)</p>
+                                <p>Número: 84 525 4253 (Nome: OtakuZone Intl)</p>
                             </div>
                             <div className="step">
                                 <strong>2. Valor</strong>
