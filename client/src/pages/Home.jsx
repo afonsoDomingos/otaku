@@ -22,12 +22,12 @@ const Home = () => {
                 API.get('/animes'),
                 API.get('/shorts')
             ]);
-            setAnimes(aRes.data);
-            setShorts(sRes.data);
+            setAnimes(aRes.data || []);
+            setShorts(sRes.data || []);
             
-            const cats = [...new Set(aRes.data.map(a => a.category))];
+            const cats = [...new Set((aRes.data || []).map(a => a.category).filter(Boolean))];
             setCategories(cats);
-            setFeaturedAnimes(aRes.data.slice(0, 3));
+            setFeaturedAnimes((aRes.data || []).slice(0, 3));
             setLoading(false);
         } catch (error) {
             console.error("Error fetching data", error);
@@ -48,8 +48,8 @@ const Home = () => {
     }, [featuredAnimes]);
 
     const filteredAnimes = animes.filter(anime => 
-        anime.title.toLowerCase().includes((searchQuery || "").toLowerCase()) ||
-        anime.category.toLowerCase().includes((searchQuery || "").toLowerCase())
+        (anime.title || "").toLowerCase().includes((searchQuery || "").trim().toLowerCase()) ||
+        (anime.category || "").toLowerCase().includes((searchQuery || "").trim().toLowerCase())
     );
 
     if (loading) return (
@@ -104,7 +104,7 @@ const Home = () => {
             )}
 
             <div className="main-content">
-                {searchQuery ? (
+                {(searchQuery && searchQuery.trim().length > 0) ? (
                     <div className="search-results">
                         <h2 className="row-title">Resultados para "{searchQuery}"</h2>
                         <div className="results-grid">
@@ -125,20 +125,28 @@ const Home = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="row-container">
-                            <h2 className="row-title">Novidades no OtakuZone</h2>
-                            <div className="row-scroll">
-                                {animes.slice().reverse().slice(0, 6).map(anime => (
-                                    <Link to={`/anime/${anime._id}`} key={`new-${anime._id}`} className="anime-card">
-                                        <img src={anime.thumbnail} alt={anime.title} />
-                                        <div className="anime-card-info">
-                                            <h3>{anime.title}</h3>
-                                            <p>{anime.seasons?.length || 0} Temporadas</p>
-                                        </div>
-                                    </Link>
-                                ))}
+                        {animes.length === 0 && shorts.length === 0 && !loading && (
+                            <div className="container" style={{padding: '100px 4%', textAlign: 'center', color: '#888'}}>
+                                <p>Carregando as novidades para você...</p>
                             </div>
-                        </div>
+                        )}
+
+                        {animes.length > 0 && (
+                            <div className="row-container">
+                                <h2 className="row-title">Novidades no OtakuZone</h2>
+                                <div className="row-scroll">
+                                    {animes.slice().reverse().slice(0, 10).map(anime => (
+                                        <Link to={`/anime/${anime._id}`} key={`new-${anime._id}`} className="anime-card">
+                                            <img src={anime.thumbnail} alt={anime.title} />
+                                            <div className="anime-card-info">
+                                                <h3>{anime.title}</h3>
+                                                <p>{anime.seasons?.length || 0} Temporadas</p>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {shorts.length > 0 && (
                             <div className="row-container">
@@ -196,37 +204,37 @@ const Home = () => {
                                 </div>
                             </div>
                         ))}
+
+                        <section className="about-otaku-section container" style={{marginTop: '60px'}}>
+                            <div className="about-grid">
+                                <div className="about-image">
+                                    <img src="/images/OTAKU.png" alt="Bem-vindo Otaku" />
+                                </div>
+                                <div className="about-text">
+                                    <div className="badge">SOBRE NÓS</div>
+                                    <h2>Bem-vindo à Família OtakuZone!</h2>
+                                    <p>
+                                        Ser Otaku é mais do que apenas assistir anime; é uma paixão por contar histórias, 
+                                        conexão com personagens e uma cultura vibrante que atravessa fronteiras. 
+                                        Aqui na <strong>OtakuZoneFlix</strong>, criamos um espaço onde cada fã moçambicano 
+                                        pode encontrar seu universo favorito com qualidade premium.
+                                    </p>
+                                    <p>
+                                        Do primeiro episódio de um clássico ao lançamento mais recente do Japão, 
+                                        estamos aqui para garantir que sua jornada seja épica. Prepare o ramen, 
+                                        escolha seu clã e divirta-se!
+                                    </p>
+                                    <div className="social-cta">
+                                        <p>Junta-te ao nosso Podcast e debates semanais!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </>
                 )}
             </div>
 
-                <section className="about-otaku-section container">
-                    <div className="about-grid">
-                        <div className="about-image">
-                            <img src="/images/OTAKU.png" alt="Bem-vindo Otaku" />
-                        </div>
-                        <div className="about-text">
-                            <div className="badge">SOBRE NÓS</div>
-                            <h2>Bem-vindo à Família OtakuZone!</h2>
-                            <p>
-                                Ser Otaku é mais do que apenas assistir anime; é uma paixão por contar histórias, 
-                                conexão com personagens e uma cultura vibrante que atravessa fronteiras. 
-                                Aqui na <strong>OtakuZoneFlix</strong>, criamos um espaço onde cada fã moçambicano 
-                                pode encontrar seu universo favorito com qualidade premium.
-                            </p>
-                            <p>
-                                Do primeiro episódio de um clássico ao lançamento mais recente do Japão, 
-                                estamos aqui para garantir que sua jornada seja épica. Prepare o ramen, 
-                                escolha seu clã e divirta-se!
-                            </p>
-                            <div className="social-cta">
-                                <p>Junta-te ao nosso Podcast e debates semanais!</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <Footer />
+            <Footer />
 
             <style>{`
                 .home-page { background: #141414; min-height: 100vh; color: white; }
@@ -310,7 +318,14 @@ const Home = () => {
 
                 .about-otaku-section { padding: 100px 0; border-top: 1px solid #222; }
                 .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-                .about-image img { width: 100%; height: 500px; object-fit: cover; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+                .about-image img { 
+                    width: 100%; 
+                    height: 550px; 
+                    object-fit: cover; 
+                    object-position: top; 
+                    border-radius: 12px; 
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+                }
                 .about-text h2 { font-size: 2.5rem; margin: 20px 0; font-weight: 800; }
                 .about-text p { font-size: 1.1rem; color: #aaa; line-height: 1.8; margin-bottom: 20px; }
                 .badge { background: #E50914; color: white; padding: 5px 12px; font-weight: bold; border-radius: 4px; font-size: 0.85rem; width: fit-content; }
