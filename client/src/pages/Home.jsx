@@ -200,7 +200,33 @@ const Home = () => {
                 )}
             </div>
 
-            <Footer />
+                <section className="about-otaku-section container">
+                    <div className="about-grid">
+                        <div className="about-image">
+                            <img src="/images/welcome-otaku.png" alt="Bem-vindo Otaku" />
+                        </div>
+                        <div className="about-text">
+                            <div className="badge">SOBRE NÓS</div>
+                            <h2>Bem-vindo à Família OtakuZone!</h2>
+                            <p>
+                                Ser Otaku é mais do que apenas assistir anime; é uma paixão por contar histórias, 
+                                conexão com personagens e uma cultura vibrante que atravessa fronteiras. 
+                                Aqui na <strong>OtakuZoneFlix</strong>, criamos um espaço onde cada fã moçambicano 
+                                pode encontrar seu universo favorito com qualidade premium.
+                            </p>
+                            <p>
+                                Do primeiro episódio de um clássico ao lançamento mais recente do Japão, 
+                                estamos aqui para garantir que sua jornada seja épica. Prepare o ramen, 
+                                escolha seu clã e divirta-se!
+                            </p>
+                            <div className="social-cta">
+                                <p>Junta-te ao nosso Podcast e debates semanais!</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <Footer />
 
             <style>{`
                 .home-page { background: #141414; min-height: 100vh; color: white; }
@@ -278,7 +304,16 @@ const Home = () => {
                     .anime-card-info h3 { font-size: 0.8rem; }
                     
                     .carousel-indicators { bottom: 280px; left: 5%; transform: none; }
+                    .about-grid { grid-template-columns: 1fr !important; text-align: center; }
+                    .about-image img { height: 300px !important; }
                 }
+
+                .about-otaku-section { padding: 100px 0; border-top: 1px solid #222; }
+                .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+                .about-image img { width: 100%; height: 500px; object-fit: cover; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+                .about-text h2 { font-size: 2.5rem; margin: 20px 0; font-weight: 800; }
+                .about-text p { font-size: 1.1rem; color: #aaa; line-height: 1.8; margin-bottom: 20px; }
+                .badge { background: #E50914; color: white; padding: 5px 12px; font-weight: bold; border-radius: 4px; font-size: 0.85rem; width: fit-content; }
             `}</style>
         </div>
     );
