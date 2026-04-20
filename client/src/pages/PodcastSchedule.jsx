@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import API from '../api';
-import { Youtube, Music, Send, CheckCircle, Upload, MessageSquare, Info } from 'lucide-react';
+import { Youtube, Music, Send, CheckCircle, Upload, MessageSquare, Info, Instagram } from 'lucide-react';
 import Footer from '../components/Footer';
 
 const PodcastSchedule = () => {
@@ -79,6 +79,13 @@ const PodcastSchedule = () => {
                             <div>
                                 <strong>Seguir no TikTok</strong>
                                 <a href="https://www.tiktok.com/@universo_otaku4/" target="_blank">@universo_otaku4</a>
+                            </div>
+                        </div>
+                        <div className="req-item">
+                            <Instagram color="#E1306C" />
+                            <div>
+                                <strong>Seguir no Instagram</strong>
+                                <a href="https://www.instagram.com/u.otaku.podcast/" target="_blank">@u.otaku.podcast</a>
                             </div>
                         </div>
                         <div className="req-item">

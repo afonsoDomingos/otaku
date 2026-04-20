@@ -11,6 +11,9 @@ const Footer = () => {
                     <a href="https://www.tiktok.com/@universo_otaku4" target="_blank" rel="noreferrer" title="TikTok" className="tiktok-icon">
                         <span>TikTok</span>
                     </a>
+                    <a href="https://www.instagram.com/u.otaku.podcast/" target="_blank" rel="noreferrer" title="Instagram" className="instagram-icon">
+                        <span>Instagram</span>
+                    </a>
                 </div>
                 <div className="footer-links">
                     <div className="footer-column">
@@ -63,7 +66,7 @@ const Footer = () => {
                 .footer-socials a:hover {
                     opacity: 1;
                 }
-                .tiktok-icon span, .youtube-text span {
+                .tiktok-icon span, .youtube-text span, .instagram-icon span {
                     font-weight: bold;
                     font-size: 0.8rem;
                     border: 1px solid white;
@@ -73,6 +76,10 @@ const Footer = () => {
                 .youtube-text span {
                     border-color: var(--primary);
                     color: var(--primary);
+                }
+                .instagram-icon span {
+                    border-color: #E1306C;
+                    color: #E1306C;
                 }
                 .footer-content {
                     max-width: 1000px;
