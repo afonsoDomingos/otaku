@@ -24,7 +24,7 @@ const AnimeDetails = () => {
                 setAnime(data);
                 
                 const { data: allAnimes } = await API.get('/animes');
-                setOthers(allAnimes.filter(a => a._id !== id).slice(0, 6));
+                setOthers((Array.isArray(allAnimes) ? allAnimes : []).filter(a => a._id !== id).slice(0, 6));
             } catch (error) {
                 console.error(error);
             }

@@ -27,16 +27,18 @@ const AdminDashboard = () => {
                 API.get('/shorts'),
                 API.get('/interviews/admin')
             ]);
-            setPurchases(pRes.data);
-            setAnimes(aRes.data);
-            setMangas(mRes.data || []);
-            setShorts(sRes.data || []);
-            setInterviews(iRes.data || []);
+            const purchases = Array.isArray(pRes.data) ? pRes.data : [];
+            const animeList = Array.isArray(aRes.data) ? aRes.data : [];
+            setPurchases(purchases);
+            setAnimes(animeList);
+            setMangas(Array.isArray(mRes.data) ? mRes.data : []);
+            setShorts(Array.isArray(sRes.data) ? sRes.data : []);
+            setInterviews(Array.isArray(iRes.data) ? iRes.data : []);
             
-            const approved = pRes.data.filter(p => p.status === 'approved');
+            const approved = purchases.filter(p => p.status === 'approved');
             setStats({
-                pending: pRes.data.filter(p => p.status === 'pending').length,
-                totalSales: pRes.data.length,
+                pending: purchases.filter(p => p.status === 'pending').length,
+                totalSales: purchases.length,
                 revenue: approved.reduce((acc, p) => acc + (p.price || 0), 0),
                 approvedCount: approved.length
             });
