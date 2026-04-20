@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import API from '../api';
 import { Play, Info, Flame } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 
 import { useSearch } from '../context/SearchContext';
 
 const Home = () => {
     const { searchQuery } = useSearch();
+    const navigate = useNavigate();
     const [animes, setAnimes] = useState([]);
+    const [shorts, setShorts] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [featured, setFeatured] = useState(null);
+    const [featuredAnimes, setFeaturedAnimes] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeHero, setActiveHero] = useState(0);
 
     const filteredAnimes = animes.filter(anime => 
         anime.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -21,15 +24,16 @@ const Home = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const { data } = await API.get('/animes');
-                setAnimes(data);
+                const [aRes, sRes] = await Promise.all([
+                    API.get('/animes'),
+                    API.get('/shorts')
+                ]);
+                setAnimes(aRes.data);
+                setShorts(sRes.data);
                 
-                const cats = [...new Set(data.map(a => a.category))];
+                const cats = [...new Set(aRes.data.map(a => a.category))];
                 setCategories(cats);
-                
-                if (data.length > 0) {
-                    setFeatured(data[0]); // Pega o primeiro como destaque principal
-                }
+                setFeaturedAnimes(aRes.data.slice(0, 3));
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching animes", error);
@@ -132,6 +136,26 @@ const Home = () => {
                             </div>
                         </div>
 
+                        {/* Shorts Row */}
+                        {shorts.length > 0 && (
+                            <div className="row-container">
+                                <h2 className="row-title">Shorts Otaku</h2>
+                                <div className="row-scroll shorts-row">
+                                    {shorts.map(short => (
+                                        <div key={short._id} className="short-card" onClick={() => window.open(short.url, '_blank')}>
+                                            <div className="short-thumbnail">
+                                                <img src={`https://img.youtube.com/vi/${short.youtubeId}/hqdefault.jpg`} alt={short.title} />
+                                                <div className="short-overlay">
+                                                    <Play fill="white" size={24} />
+                                                </div>
+                                            </div>
+                                            <h3>{short.title}</h3>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Category Rows */}
                         {categories.map(cat => (
                             <div key={cat} className="row-container">
@@ -191,6 +215,15 @@ const Home = () => {
                 .row-title { font-size: 1.6rem; margin-bottom: 20px; font-weight: 700; color: #e5e5e5; }
                 .row-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
                 .row-scroll::-webkit-scrollbar { display: none; }
+
+                /* Shorts */
+                .short-card { flex: 0 0 160px; cursor: pointer; transition: transform 0.3s; }
+                .short-card:hover { transform: scale(1.05); }
+                .short-thumbnail { width: 100%; aspect-ratio: 9/16; border-radius: 8px; overflow: hidden; position: relative; border: 1px solid #333; }
+                .short-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+                .short-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
+                .short-card:hover .short-overlay { opacity: 1; }
+                .short-card h3 { font-size: 0.85rem; margin-top: 10px; font-weight: 500; color: #ccc; }
 
                 @media (max-width: 768px) {
                     .hero-carousel { height: 75vh; }

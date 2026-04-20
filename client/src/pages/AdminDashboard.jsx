@@ -7,26 +7,26 @@ const AdminDashboard = () => {
     const [purchases, setPurchases] = useState([]);
     const [animes, setAnimes] = useState([]);
     const [mangas, setMangas] = useState([]);
+    const [shorts, setShorts] = useState([]);
     const [stats, setStats] = useState({ pending: 0, totalSales: 0, revenue: 0, approvedCount: 0 });
     
-    // Form state for new anime
-    const [newAnime, setNewAnime] = useState({
-        title: '', description: '', category: 'Ação', thumbnail: '', seasons: []
-    });
-    const [newManga, setNewManga] = useState({
-        title: '', description: '', category: 'Shonen', thumbnail: '', chapters: []
-    });
+    // Form states
+    const [newAnime, setNewAnime] = useState({ title: '', description: '', category: 'Ação', thumbnail: '', seasons: [] });
+    const [newManga, setNewManga] = useState({ title: '', description: '', category: 'Shonen', thumbnail: '', chapters: [] });
+    const [newShort, setNewShort] = useState({ title: '', url: '' });
     const [uploading, setUploading] = useState(false);
 
     const fetchData = async () => {
-        const [pRes, aRes, mRes] = await Promise.all([
+        const [pRes, aRes, mRes, sRes] = await Promise.all([
             API.get('/purchases/admin'),
             API.get('/animes'),
-            API.get('/mangas')
+            API.get('/mangas'),
+            API.get('/shorts')
         ]);
         setPurchases(pRes.data);
         setAnimes(aRes.data);
         setMangas(mRes.data);
+        setShorts(sRes.data);
         const approvedPurchases = pRes.data.filter(p => p.status === 'approved');
         const revenue = pRes.data.reduce((acc, p) => p.status === 'approved' ? acc + (p.price || 0) : acc, 0);
         
@@ -100,14 +100,32 @@ const AdminDashboard = () => {
         } catch (error) { alert("Erro ao deletar."); }
     };
 
+    const handleCreateShort = async () => {
+        try {
+            await API.post('/shorts', newShort);
+            alert("Short adicionado!");
+            setNewShort({ title: '', url: '' });
+            fetchData();
+        } catch (error) { alert(error.response?.data?.message || "Erro ao adicionar short"); }
+    };
+
+    const handleDeleteShort = async (id) => {
+        if (!window.confirm("Remover este short?")) return;
+        try {
+            await API.delete(`/shorts/${id}`);
+            fetchData();
+        } catch (error) { alert("Erro ao deletar"); }
+    };
+
     return (
         <div className="admin-page container" style={{paddingTop: '100px'}}>
             <h1 style={{marginBottom: '30px'}}>Painel de Administração</h1>
             
             <div className="admin-tabs">
                 <button className={activeTab === 'purchases' ? 'active' : ''} onClick={() => setActiveTab('purchases')}>Vendas</button>
-                <button className={activeTab === 'catalog' ? 'active' : ''} onClick={() => setActiveTab('catalog')}>Gerenciar Catálogo</button>
-                <button className={activeTab === 'mangas' ? 'active' : ''} onClick={() => setActiveTab('mangas')}>Gerenciar Mangás</button>
+                <button className={activeTab === 'catalog' ? 'active' : ''} onClick={() => setActiveTab('catalog')}>Animes</button>
+                <button className={activeTab === 'mangas' ? 'active' : ''} onClick={() => setActiveTab('mangas')}>Mangás</button>
+                <button className={activeTab === 'shorts' ? 'active' : ''} onClick={() => setActiveTab('shorts')}>Shorts</button>
             </div>
 
             {activeTab === 'purchases' ? (
@@ -147,7 +165,7 @@ const AdminDashboard = () => {
                         </table>
                     </div>
                 </>
-            ) : (
+            ) : activeTab === 'catalog' ? (
                 <div className="catalog-manager">
                     <div className="add-anime-form">
                         <h2>Adicionar Novo Anime</h2>
@@ -209,6 +227,49 @@ const AdminDashboard = () => {
                                     <div className="card-controls">
                                         <h4>{a.title}</h4>
                                         <button className="reject" onClick={() => handleDeleteAnime(a._id)}><Trash2 size={16} /></button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            ) : activeTab === 'mangas' ? (
+                <div className="catalog-manager">
+                    <div className="anime-list-admin">
+                        <h2>Gerenciar Mangás</h2>
+                        <div className="admin-anime-grid">
+                            {mangas.map(m => (
+                                <div key={m._id} className="admin-anime-card">
+                                    <img src={m.thumbnail} alt="" />
+                                    <div className="card-controls">
+                                        <h4>{m.title}</h4>
+                                        <button className="reject" onClick={() => handleDeleteManga(m._id)}><Trash2 size={16} /></button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="catalog-manager">
+                    <div className="add-anime-form">
+                        <h2>Adicionar Novo Short do YouTube</h2>
+                        <div className="form-grid">
+                            <input type="text" placeholder="Título do Short" value={newShort.title} onChange={e => setNewShort({...newShort, title: e.target.value})} />
+                            <input type="text" placeholder="Link do YouTube Shorts" value={newShort.url} onChange={e => setNewShort({...newShort, url: e.target.value})} />
+                        </div>
+                        <button onClick={handleCreateShort} className="auth-btn">Adicionar Short</button>
+                    </div>
+
+                    <div className="anime-list-admin" style={{marginTop: '40px'}}>
+                        <h2>Shorts Atuais</h2>
+                        <div className="admin-anime-grid">
+                            {shorts.map(s => (
+                                <div key={s._id} className="admin-anime-card" style={{aspectRatio: '9/16', height: '300px'}}>
+                                    <img src={`https://img.youtube.com/vi/${s.youtubeId}/hqdefault.jpg`} alt="" />
+                                    <div className="card-controls">
+                                        <h4>{s.title}</h4>
+                                        <button className="reject" onClick={() => handleDeleteShort(s._id)}><Trash2 size={16} /></button>
                                     </div>
                                 </div>
                             ))}
