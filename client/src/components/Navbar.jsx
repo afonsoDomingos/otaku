@@ -153,15 +153,26 @@ const Navbar = () => {
                 }
                 .search-box.active {
                     background: rgba(0,0,0,0.8);
-                    border: 1px solid #fff;
+                    border: 1px solid var(--primary);
+                    border-radius: 6px;
+                    box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.15), 0 0 15px rgba(229, 9, 20, 0.2);
                 }
                 .search-box input {
                     background: transparent;
                     border: none;
+                    box-shadow: none;
+                    transform: none;
                     color: white;
                     outline: none;
                     width: 200px;
                     font-size: 0.9rem;
+                    padding: 0;
+                }
+                .search-box input:focus {
+                    background: transparent;
+                    border: none;
+                    box-shadow: none;
+                    transform: none;
                 }
                 .close-search {
                     cursor: pointer;
