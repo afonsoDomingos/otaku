@@ -1,9 +1,18 @@
 import React from 'react';
+import { Youtube } from 'lucide-react';
 
 const Footer = () => {
     return (
         <footer className="footer">
             <div className="footer-content">
+                <div className="footer-socials">
+                    <a href="https://www.youtube.com/@Universo_Otaku_Podcast" target="_blank" rel="noreferrer" title="YouTube">
+                        <Youtube size={24} />
+                    </a>
+                    <a href="https://www.tiktok.com/@universo_otaku4" target="_blank" rel="noreferrer" title="TikTok" className="tiktok-icon">
+                        <span>TikTok</span>
+                    </a>
+                </div>
                 <div className="footer-links">
                     <div className="footer-column">
                         <p>Dúvidas? Ligue 800 800 800</p>
@@ -38,6 +47,29 @@ const Footer = () => {
                     padding: 50px 4% 20px;
                     font-size: 0.9rem;
                     border-top: 8px solid #222;
+                }
+                .footer-socials {
+                    display: flex;
+                    gap: 25px;
+                    margin-bottom: 25px;
+                    color: white;
+                }
+                .footer-socials a {
+                    color: white;
+                    opacity: 0.8;
+                    transition: opacity 0.2s;
+                    display: flex;
+                    align-items: center;
+                }
+                .footer-socials a:hover {
+                    opacity: 1;
+                }
+                .tiktok-icon span {
+                    font-weight: bold;
+                    font-size: 0.8rem;
+                    border: 1px solid white;
+                    padding: 2px 6px;
+                    border-radius: 4px;
                 }
                 .footer-content {
                     max-width: 1000px;
