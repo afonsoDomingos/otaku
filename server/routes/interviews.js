@@ -1,13 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const Interview = require('../models/Interview');
-const { verifyToken, isAdmin } = require('../middleware/auth');
+const { protect, admin } = require('../middleware/auth');
 const multer = require('multer');
-const { storage } = require('../config/cloudinary');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'otakuzone_interviews'
+    },
+});
 const upload = multer({ storage });
 
 // Submit new interview request
-router.post('/', verifyToken, upload.single('proof'), async (req, res) => {
+router.post('/', protect, upload.single('proof'), async (req, res) => {
     try {
         const { animeExperience, proposedTopics, contactWhatsApp } = req.body;
         const interview = new Interview({
@@ -25,7 +39,7 @@ router.post('/', verifyToken, upload.single('proof'), async (req, res) => {
 });
 
 // Admin: Get all requests
-router.get('/admin', verifyToken, isAdmin, async (req, res) => {
+router.get('/admin', protect, admin, async (req, res) => {
     try {
         const interviews = await Interview.find().populate('user', 'name email').sort('-createdAt');
         res.json(interviews);
@@ -35,7 +49,7 @@ router.get('/admin', verifyToken, isAdmin, async (req, res) => {
 });
 
 // Admin: Update status
-router.put('/:id', verifyToken, isAdmin, async (req, res) => {
+router.put('/:id', protect, admin, async (req, res) => {
     try {
         const { status, scheduledDate } = req.body;
         const interview = await Interview.findByIdAndUpdate(req.params.id, { status, scheduledDate }, { new: true });
