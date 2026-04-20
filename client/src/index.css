@@ -161,8 +161,9 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://assets.nflxext.com/ffe/siteui/vlv3/f841d4c7-10e1-40af-bca1-07583321fa3c/da2928b5-373f-42a1-aa8e-ed9e70189913/US-en-20220502-popsignuptwoweeks-perspective_alpha_website_medium.jpg');
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('/images/auth-bg.png');
   background-size: cover;
+  background-position: center;
 }
 
 .auth-form {
