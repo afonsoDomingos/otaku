@@ -176,6 +176,14 @@ const Navbar = () => {
                     gap: 10px;
                     font-size: 0.8rem;
                 }
+                @media (max-width: 768px) {
+                    .navbar { height: 60px; padding: 0 15px; }
+                    .logo { font-size: 1.4rem; margin-right: 15px; }
+                    .nav-links { gap: 12px; }
+                    .nav-links a { font-size: 0.75rem; }
+                    .nav-right { gap: 15px; }
+                    .search-box input { width: 100px; }
+                }
             `}</style>
         </nav>
     );

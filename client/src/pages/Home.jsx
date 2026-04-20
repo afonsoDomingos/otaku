@@ -223,39 +223,61 @@ const Home = () => {
                 .carousel-indicators { position: absolute; bottom: 200px; left: 4%; display: flex; gap: 12px; z-index: 10; }
                 .indicator { width: 35px; height: 3px; background: rgba(255,255,255,0.25); cursor: pointer; border-radius: 2px; transition: 0.4s; }
                 .indicator.active { background: #E50914; width: 60px; }
-                .main-content { position: relative; z-index: 5; padding-top: 20px; padding-bottom: 100px; }
-                .row-container { padding-left: 4%; margin-bottom: 40px; }
-                .row-title { font-size: 1.6rem; margin-bottom: 20px; font-weight: 700; color: #e5e5e5; }
-                .row-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
+                /* Cinematic Rows */
+                .main-content { position: relative; z-index: 5; margin-top: -10vw; padding-bottom: 100px; background: linear-gradient(to bottom, transparent, #141414 5%); }
+                .row-container { padding-left: 4%; margin-bottom: 50px; }
+                .row-title { font-size: 1.8rem; margin-bottom: 25px; font-weight: 800; color: #fff; letter-spacing: -0.5px; position: relative; display: inline-block; }
+                .row-title::after { content: ''; position: absolute; left: 0; bottom: -8px; width: 40px; height: 3px; background: #E50914; border-radius: 2px; }
+                
+                .row-scroll { display: flex; gap: 20px; overflow-x: auto; padding: 10px 0 30px; scrollbar-width: none; mask-image: linear-gradient(to right, black 85%, transparent 100%); }
                 .row-scroll::-webkit-scrollbar { display: none; }
-                .short-card { flex: 0 0 160px; cursor: pointer; transition: transform 0.3s; }
-                .short-card:hover { transform: scale(1.05); }
-                .short-thumbnail { width: 100%; aspect-ratio: 9/16; border-radius: 8px; overflow: hidden; position: relative; border: 1px solid #333; }
+
+                .anime-card { flex: 0 0 240px; position: relative; border-radius: 8px; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+                .anime-card:hover { transform: scale(1.1) translateY(-10px); z-index: 10; box-shadow: 0 15px 30px rgba(229, 9, 20, 0.3); }
+                .anime-card img { width: 100%; height: 360px; object-fit: cover; }
+                
+                .anime-card-info { 
+                    position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px 15px; 
+                    background: linear-gradient(to top, rgba(0,0,0,0.95) 20%, transparent);
+                    backdrop-filter: blur(2px);
+                    opacity: 0; transition: 0.4s;
+                }
+                .anime-card:hover .anime-card-info { opacity: 1; }
+                .anime-card-info h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; color: #fff; }
+                .anime-card-info p { font-size: 0.85rem; color: #E50914; font-weight: 600; }
+
+                /* Shorts Styling (More Vertical) */
+                .shorts-row { gap: 15px; }
+                .short-card { flex: 0 0 180px; transition: transform 0.4s; cursor: pointer; }
+                .short-thumbnail { width: 100%; aspect-ratio: 9/16; border-radius: 8px; overflow: hidden; position: relative; border: 2px solid transparent; transition: 0.3s; }
                 .short-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-                .short-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
-                .short-card:hover .short-overlay { opacity: 1; }
-                .short-card h3 { font-size: 0.85rem; margin-top: 10px; font-weight: 500; color: #ccc; }
+                .short-card:hover .short-thumbnail { border-color: #E50914; box-shadow: 0 0 20px rgba(229, 9, 20, 0.4); }
+                .short-card h3 { font-weight: 700; font-size: 0.9rem; color: #fff; margin-top: 10px; }
 
                 /* Short Player Modal */
-                .short-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-                .short-modal-content { position: relative; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 400px; animation: modal-zoom 0.4s ease-out; }
-                @keyframes modal-zoom { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+                .short-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+                .short-modal-content { position: relative; width: 100%; max-width: 420px; animation: modal-reveal 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                @keyframes modal-reveal { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
                 
-                .short-video-container { width: 100%; aspect-ratio: 9/16; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 50px rgba(0,0,0,0.8); border: 1px solid #333; }
+                .short-video-container { width: 100%; aspect-ratio: 9/16; background: #000; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 100px rgba(0,0,0,1); }
                 .short-video-container iframe { width: 100%; height: 100%; }
-                
-                .close-short { position: absolute; top: -50px; right: 0; background: none; border: none; color: white; cursor: pointer; opacity: 0.7; transition: 0.3s; }
-                .close-short:hover { opacity: 1; transform: rotate(90deg); }
-                
-                .short-modal-info { text-align: center; margin-top: 15px; }
-                .short-modal-info h2 { font-size: 1.2rem; font-weight: 600; color: white; }
 
                 @media (max-width: 768px) {
-                    .hero-carousel { height: 75vh; }
-                    .hero-content h1 { font-size: 2.8rem; }
-                    .hero-content p { font-size: 1.1rem; -webkit-line-clamp: 2; }
-                    .carousel-indicators { bottom: 180px; }
-                    .short-modal-content { max-width: 90%; }
+                    .hero-carousel { height: 90vh; }
+                    .hero-content { padding-top: 15vh; }
+                    .hero-content h1 { font-size: 2.5rem; text-align: center; }
+                    .hero-content p { font-size: 1rem; text-align: center; -webkit-line-clamp: 4; line-height: 1.6; }
+                    .hero-btns { flex-direction: column; width: 100%; align-items: stretch; margin-top: 30px; gap: 12px; }
+                    .hero-btns button { width: 100%; justify-content: center; padding: 15px; }
+                    
+                    .main-content { margin-top: -100px; padding-top: 40px; }
+                    .row-title { font-size: 1.4rem; }
+                    .anime-card { flex: 0 0 160px; }
+                    .anime-card img { height: 240px; }
+                    .anime-card-info { opacity: 1; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+                    .anime-card-info h3 { font-size: 0.9rem; }
+                    
+                    .carousel-indicators { bottom: 250px; left: 50%; transform: translateX(-50%); }
                 }
             `}</style>
         </div>
