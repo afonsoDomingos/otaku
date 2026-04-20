@@ -103,7 +103,12 @@ const Home = () => {
                 </div>
             )}
 
-            <div className="main-content">
+            <div className="main-content" style={{marginTop: featuredAnimes.length > 0 ? '-150px' : '0'}}>
+                {animes.length === 0 && !loading && (
+                    <div className="container" style={{padding: '50px 4%', opacity: 0.6}}>
+                        <p>Sincronizando conteúdos com o servidor...</p>
+                    </div>
+                )}
                 {(searchQuery && searchQuery.trim().length > 0) ? (
                     <div className="search-results">
                         <h2 className="row-title">Resultados para "{searchQuery}"</h2>

@@ -26,7 +26,9 @@ apiRouter.use('/purchases', require('./routes/purchases'));
 apiRouter.use('/interviews', require('./routes/interviews'));
 
 app.use('/api', apiRouter);
-app.use('/', apiRouter); // Fallback for Vercel rewriting behavior
+app.use('/', apiRouter);
+
+apiRouter.get('/ping', (req, res) => res.json({ message: 'Server is alive', db: mongoose.connection.readyState }));
 
 const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
