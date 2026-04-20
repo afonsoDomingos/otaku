@@ -63,7 +63,7 @@ const Navbar = () => {
                         </div>
                     </div>
                 ) : (
-                    <Link to="/login" className="btn-primary" style={{ padding: '5px 15px', fontSize: '0.9rem' }}>Login</Link>
+                    <Link to="/login" className="btn-primary nav-login-btn">Login</Link>
                 )}
             </div>
 
@@ -177,14 +177,16 @@ const Navbar = () => {
                     gap: 10px;
                     font-size: 0.8rem;
                 }
+                .nav-login-btn { padding: 8px 20px; font-size: 0.9rem; }
                 @media (max-width: 768px) {
-                    .navbar { height: 60px; padding: 0 10px; }
-                    .logo { font-size: 1.1rem; margin-right: 10px; letter-spacing: -0.5px; }
-                    .nav-links { gap: 8px; }
-                    .nav-links a { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
-                    .nav-right { gap: 10px; }
-                    .nav-icon { width: 16px; }
-                    .search-box input { width: 80px; font-size: 0.8rem; }
+                    .navbar { height: 60px; padding: 0 5px; }
+                    .logo { font-size: 0.95rem; margin-right: 5px; letter-spacing: -0.8px; }
+                    .nav-links { gap: 6px; }
+                    .nav-links a { font-size: 0.6rem; }
+                    .nav-right { gap: 6px; }
+                    .nav-icon { width: 14px; }
+                    .search-box input { width: 60px; font-size: 0.75rem; }
+                    .nav-login-btn { padding: 5px 10px; font-size: 0.7rem; }
                 }
             `}</style>
         </nav>
