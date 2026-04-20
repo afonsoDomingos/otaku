@@ -8,6 +8,7 @@ const AdminDashboard = () => {
     const [animes, setAnimes] = useState([]);
     const [mangas, setMangas] = useState([]);
     const [shorts, setShorts] = useState([]);
+    const [interviews, setInterviews] = useState([]);
     const [stats, setStats] = useState({ pending: 0, totalSales: 0, revenue: 0, approvedCount: 0 });
     
     // Form states
@@ -20,16 +21,18 @@ const AdminDashboard = () => {
     const [uploading, setUploading] = useState(false);
 
     const fetchData = async () => {
-        const [pRes, aRes, mRes, sRes] = await Promise.all([
+        const [pRes, aRes, mRes, sRes, iRes] = await Promise.all([
             API.get('/purchases/admin'),
             API.get('/animes'),
             API.get('/mangas'),
-            API.get('/shorts')
+            API.get('/shorts'),
+            API.get('/interviews/admin')
         ]);
         setPurchases(pRes.data);
         setAnimes(aRes.data);
         setMangas(mRes.data);
         setShorts(sRes.data);
+        setInterviews(iRes.data);
         const approvedPurchases = pRes.data.filter(p => p.status === 'approved');
         const revenue = pRes.data.reduce((acc, p) => p.status === 'approved' ? acc + (p.price || 0) : acc, 0);
         
@@ -141,6 +144,7 @@ const AdminDashboard = () => {
                 <button className={activeTab === 'catalog' ? 'active' : ''} onClick={() => setActiveTab('catalog')}>Animes</button>
                 <button className={activeTab === 'mangas' ? 'active' : ''} onClick={() => setActiveTab('mangas')}>Mangás</button>
                 <button className={activeTab === 'shorts' ? 'active' : ''} onClick={() => setActiveTab('shorts')}>Shorts</button>
+                <button className={activeTab === 'podcast' ? 'active' : ''} onClick={() => setActiveTab('podcast')}>Podcast</button>
             </div>
 
             {activeTab === 'purchases' ? (
@@ -267,8 +271,9 @@ const AdminDashboard = () => {
                         </div>
                     </div>
                 </div>
-            ) : (
+            ) : activeTab === 'shorts' ? (
                 <div className="catalog-manager">
+                    {/* ... shorts content ... */}
                     <div className="add-anime-form">
                         <h2>Adicionar Novo Short do YouTube</h2>
                         <div className="form-grid">
@@ -291,6 +296,28 @@ const AdminDashboard = () => {
                                 </div>
                             ))}
                         </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="podcast-manager">
+                    <h2>Pedidos de Entrevista (Podcast)</h2>
+                    <div className="purchases-table" style={{marginTop: '20px'}}>
+                        <table>
+                            <thead>
+                                <tr><th>Usuário</th><th>WhatsApp</th><th>Temas Propostos</th><th>Comprovativo</th><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                                {interviews.map(i => (
+                                    <tr key={i._id}>
+                                        <td>{i.user?.name}</td>
+                                        <td>{i.contactWhatsApp}</td>
+                                        <td>{i.proposedTopics}</td>
+                                        <td><a href={i.paymentProof} target="_blank" rel="noreferrer" className="proof-link">Ver Pagamento <ExternalLink size={14} /></a></td>
+                                        <td>{i.status}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             )}

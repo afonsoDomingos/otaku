@@ -23,6 +23,7 @@ apiRouter.use('/animes', require('./routes/animes'));
 apiRouter.use('/mangas', require('./routes/mangas'));
 apiRouter.use('/shorts', require('./routes/shorts'));
 apiRouter.use('/purchases', require('./routes/purchases'));
+apiRouter.use('/interviews', require('./routes/interviews'));
 
 app.use('/api', apiRouter);
 app.use('/', apiRouter); // Fallback for Vercel rewriting behavior

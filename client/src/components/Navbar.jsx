@@ -26,7 +26,8 @@ const Navbar = () => {
                 <div className="nav-links">
                     <Link to="/">Início</Link>
                     <Link to="/mangas">Mangás</Link>
-                    {user && <Link to="/my-purchases">Minhas Compras</Link>}
+                    <Link to="/podcast-agenda">Podcast</Link>
+                    {user && <Link to="/my-purchases">Compras</Link>}
                     {user?.role === 'admin' && <Link to="/admin">Admin</Link>}
                 </div>
             </div>

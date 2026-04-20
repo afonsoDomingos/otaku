@@ -12,6 +12,7 @@ import Player from './pages/Player';
 import Mangas from './pages/Mangas';
 import MangaDetails from './pages/MangaDetails';
 import MangaReader from './pages/MangaReader';
+import PodcastSchedule from './pages/PodcastSchedule';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
     const { user, loading } = useAuth();
@@ -34,6 +35,7 @@ function App() {
             <Route path="/mangas" element={<Mangas />} />
             <Route path="/manga/:id" element={<MangaDetails />} />
             <Route path="/manga-reader/:mangaId/:chapterIndex" element={<ProtectedRoute><MangaReader /></ProtectedRoute>} />
+            <Route path="/podcast-agenda" element={<ProtectedRoute><PodcastSchedule /></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/anime/:id" element={<AnimeDetails />} />
