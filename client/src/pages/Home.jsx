@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import API from '../api';
-import { Play, Info, Flame } from 'lucide-react';
+import { Play, Info, Flame, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import { useSearch } from '../context/SearchContext';

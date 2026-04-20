@@ -13,6 +13,7 @@ import Mangas from './pages/Mangas';
 import MangaDetails from './pages/MangaDetails';
 import MangaReader from './pages/MangaReader';
 import PodcastSchedule from './pages/PodcastSchedule';
+import { SearchProvider } from './context/SearchContext';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
     const { user, loading } = useAuth();
@@ -21,8 +22,6 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
     if (adminOnly && user.role !== 'admin') return <Navigate to="/" />;
     return children;
 };
-
-import { SearchProvider } from './context/SearchContext';
 
 function App() {
   return (
