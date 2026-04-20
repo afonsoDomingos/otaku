@@ -304,23 +304,34 @@ const Home = () => {
                 .short-video-container iframe { width: 100%; height: 100%; }
 
                 @media (max-width: 768px) {
-                    .hero-carousel { height: 95vh; }
-                    .hero-content { padding: 0 5%; padding-top: 20vh; }
-                    .hero-content h1 { font-size: 2.2rem; text-align: left; }
-                    .hero-content p { font-size: 0.95rem; text-align: left; -webkit-line-clamp: 5; line-height: 1.5; margin-bottom: 25px; }
-                    .hero-btns { flex-direction: column; width: 100%; align-items: stretch; margin-top: 20px; gap: 10px; }
-                    .hero-btns button { width: 100%; justify-content: center; padding: 12px; font-size: 0.9rem; }
+                    .hero-carousel { height: 85vh; margin-bottom: -40px; }
+                    .hero-content { padding: 0 5%; padding-top: 50vh; }
+                    .hero-content h1 { font-size: 2.2rem; text-align: left; margin-bottom: 10px; }
+                    .hero-content p { font-size: 0.95rem; text-align: left; -webkit-line-clamp: 4; line-height: 1.4; margin-bottom: 20px; }
+                    .featured-badge { padding: 4px 10px; font-size: 0.75rem; border-left-width: 2px; }
+                    .hero-btns { flex-direction: column; width: 100%; align-items: stretch; margin-top: 0px; gap: 10px; }
+                    .hero-btns button { width: 100%; justify-content: center; padding: 12px; font-size: 1rem; border-radius: 4px; }
                     
                     .main-content { margin-top: 0; padding-top: 20px; }
-                    .row-title { font-size: 1.25rem; font-weight: 800; }
-                    .anime-card { flex: 0 0 140px; }
-                    .anime-card img { height: 210px; }
-                    .anime-card-info { opacity: 1; padding: 10px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); }
-                    .anime-card-info h3 { font-size: 0.8rem; }
+                    .row-container { margin-bottom: 30px; }
+                    .row-title { font-size: 1.3rem; margin-bottom: 15px; }
                     
-                    .carousel-indicators { bottom: 280px; left: 5%; transform: none; }
-                    .about-grid { grid-template-columns: 1fr !important; text-align: center; }
-                    .about-image img { height: 300px !important; }
+                    /* Smaller Cards designed for horizontal swiping */
+                    .anime-card { flex: 0 0 130px; border-radius: 6px; }
+                    .anime-card img { height: 195px; }
+                    .anime-card-info { opacity: 1; padding: 8px; background: linear-gradient(to top, rgba(0,0,0,0.95) 40%, transparent); }
+                    .anime-card-info h3 { font-size: 0.85rem; line-height: 1.2; box-orient: vertical; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; }
+                    .short-card { flex: 0 0 110px; }
+                    .short-card h3 { font-size: 0.8rem; }
+                    
+                    .carousel-indicators { bottom: 60px; left: 5%; }
+                    
+                    .about-otaku-section { padding: 50px 0; }
+                    .about-grid { grid-template-columns: 1fr !important; gap: 30px; text-align: center; }
+                    .about-image img { height: 300px !important; border-radius: 8px; }
+                    .about-text h2 { font-size: 1.8rem; }
+                    .badge { margin: 0 auto; }
+                    .social-cta { justify-content: center; }
                 }
 
                 .about-otaku-section { padding: 100px 0; border-top: 1px solid #222; }
