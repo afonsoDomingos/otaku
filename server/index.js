@@ -22,8 +22,8 @@ app.use('/api/animes', require('./routes/animes'));
 app.use('/api/purchases', require('./routes/purchases'));
 
 const PORT = process.env.PORT || 5000;
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+    app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
 }
 
 module.exports = app;

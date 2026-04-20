@@ -1,13 +1,18 @@
 import axios from 'axios';
 
 const API = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: import.meta.env.VITE_API_URL || '/api',
 });
 
 API.interceptors.request.use((req) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.token) {
-        req.headers.Authorization = `Bearer ${user.token}`;
+    try {
+        const savedUser = localStorage.getItem('user');
+        const user = savedUser ? JSON.parse(savedUser) : null;
+        if (user && user.token) {
+            req.headers.Authorization = `Bearer ${user.token}`;
+        }
+    } catch (error) {
+        console.error("Erro ao processar token no interceptor:", error);
     }
     return req;
 });

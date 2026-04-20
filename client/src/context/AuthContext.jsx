@@ -4,7 +4,16 @@ import API from '../api';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
+    const [user, setUser] = useState(() => {
+        try {
+            const savedUser = localStorage.getItem('user');
+            return savedUser ? JSON.parse(savedUser) : null;
+        } catch (error) {
+            console.error("Erro ao carregar usuário do localStorage:", error);
+            localStorage.removeItem('user');
+            return null;
+        }
+    });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
