@@ -17,9 +17,13 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.error('MongoDB connection error:', err));
 
 // Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/animes', require('./routes/animes'));
-app.use('/api/purchases', require('./routes/purchases'));
+const apiRouter = express.Router();
+apiRouter.use('/auth', require('./routes/auth'));
+apiRouter.use('/animes', require('./routes/animes'));
+apiRouter.use('/purchases', require('./routes/purchases'));
+
+app.use('/api', apiRouter);
+app.use('/', apiRouter); // Fallback for Vercel rewriting behavior
 
 const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
