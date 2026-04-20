@@ -161,12 +161,33 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('/images/auth-bg.png');
+  position: relative;
+  overflow: hidden;
+  background-color: var(--background);
+}
+
+.auth-container::before {
+  content: "";
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.85)), url('/images/auth-bg.png');
   background-size: cover;
   background-position: center;
+  z-index: 1;
+  animation: auth-bg-pan 25s ease-in-out infinite alternate;
+}
+
+@keyframes auth-bg-pan {
+  0% { transform: translateY(-5%) scale(1.05); }
+  100% { transform: translateY(5%) scale(1.05); }
 }
 
 .auth-form {
+  position: relative;
+  z-index: 10;
   background-color: rgba(0, 0, 0, 0.75);
   padding: 60px 68px 40px;
   border-radius: 4px;
