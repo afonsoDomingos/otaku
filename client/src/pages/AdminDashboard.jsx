@@ -103,13 +103,25 @@ const AdminDashboard = () => {
         } catch (error) { alert("Erro ao deletar."); }
     };
 
+    const handleDeleteManga = async (id) => {
+        if (!window.confirm("Tem certeza que deseja remover este mangá?")) return;
+        try {
+            await API.delete(`/mangas/${id}`);
+            fetchData();
+        } catch (error) { alert("Erro ao deletar."); }
+    };
+
     const handleCreateShort = async () => {
         try {
-            await API.post('/shorts', newShort);
+            const youtubeId = newShort.url.includes('shorts/') 
+                ? newShort.url.split('shorts/')[1].split('?')[0]
+                : newShort.url.split('v=')[1]?.split('&')[0];
+            
+            await API.post('/shorts', { ...newShort, youtubeId });
             alert("Short adicionado!");
             setNewShort({ title: '', url: '' });
             fetchData();
-        } catch (error) { alert(error.response?.data?.message || "Erro ao adicionar short"); }
+        } catch (error) { alert("Erro ao adicionar short."); }
     };
 
     const handleDeleteShort = async (id) => {
@@ -117,7 +129,7 @@ const AdminDashboard = () => {
         try {
             await API.delete(`/shorts/${id}`);
             fetchData();
-        } catch (error) { alert("Erro ao deletar"); }
+        } catch (error) { alert("Erro ao deletar."); }
     };
 
     return (
@@ -153,7 +165,9 @@ const AdminDashboard = () => {
                                         <td><Film size={16} /> {p.anime?.title}</td>
                                         <td>{new Date(p.createdAt).toLocaleDateString()}</td>
                                         <td><a href={p.paymentProof} target="_blank" rel="noreferrer" className="proof-link">Ver Comprovativo <ExternalLink size={14} /></a></td>
-                                        <td><span className={`status-tag ${p.status}`}>{p.status}</span></td>
+                                        <td><span className={`status-tag ${p.status}`}>
+                                            {p.status === 'pending' ? 'Pendente' : p.status === 'approved' ? 'Aprovado' : 'Rejeitado'}
+                                        </span></td>
                                         <td>
                                             {p.status === 'pending' && (
                                                 <div className="action-btns">
