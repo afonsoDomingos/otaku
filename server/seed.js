@@ -9,7 +9,7 @@ const animes = [
     {
         title: "Demon Slayer: Kimetsu no Yaiba",
         description: "Tanjiro Kamado, a young boy who becomes a demon slayer after his family is slaughtered and his younger sister Nezuko is turned into a demon.",
-        thumbnail: "https://image.tmdb.org/t/p/original/h889m95f2T7p7S9A440kLpxP0L0.jpg",
+        thumbnail: "https://www.themoviedb.org/t/p/original/xMBRSYbe6v9BC9STInE899pIu8M.jpg",
         category: "Ação",
         seasons: [
             {
@@ -25,7 +25,7 @@ const animes = [
     {
         title: "Attack on Titan",
         description: "After his hometown is destroyed and his mother is killed, young Eren Jaeger vows to cleanse the earth of the giant humanoid Titans.",
-        thumbnail: "https://image.tmdb.org/t/p/original/h9zSTae9ou3rQw9o9vpk99rLZ47.jpg",
+        thumbnail: "https://www.themoviedb.org/t/p/original/8C7q82uS8n2D7M2u9LSwCq9S8sw.jpg",
         category: "Drama",
         seasons: [
             {
