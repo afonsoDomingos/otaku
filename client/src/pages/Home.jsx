@@ -203,7 +203,7 @@ const Home = () => {
                 <section className="about-otaku-section container">
                     <div className="about-grid">
                         <div className="about-image">
-                            <img src="/images/welcome-otaku.png" alt="Bem-vindo Otaku" />
+                            <img src="/images/OTAKU.png" alt="Bem-vindo Otaku" />
                         </div>
                         <div className="about-text">
                             <div className="badge">SOBRE NÓS</div>
