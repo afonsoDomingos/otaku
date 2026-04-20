@@ -1,13 +1,12 @@
 import React from 'react';
-import { Youtube } from 'lucide-react';
 
 const Footer = () => {
     return (
         <footer className="footer">
             <div className="footer-content">
                 <div className="footer-socials">
-                    <a href="https://www.youtube.com/@Universo_Otaku_Podcast" target="_blank" rel="noreferrer" title="YouTube">
-                        <Youtube size={24} />
+                    <a href="https://www.youtube.com/@Universo_Otaku_Podcast" target="_blank" rel="noreferrer" title="YouTube" className="youtube-text">
+                        <span>YouTube</span>
                     </a>
                     <a href="https://www.tiktok.com/@universo_otaku4" target="_blank" rel="noreferrer" title="TikTok" className="tiktok-icon">
                         <span>TikTok</span>
@@ -64,12 +63,16 @@ const Footer = () => {
                 .footer-socials a:hover {
                     opacity: 1;
                 }
-                .tiktok-icon span {
+                .tiktok-icon span, .youtube-text span {
                     font-weight: bold;
                     font-size: 0.8rem;
                     border: 1px solid white;
-                    padding: 2px 6px;
+                    padding: 2px 8px;
                     border-radius: 4px;
+                }
+                .youtube-text span {
+                    border-color: var(--primary);
+                    color: var(--primary);
                 }
                 .footer-content {
                     max-width: 1000px;
