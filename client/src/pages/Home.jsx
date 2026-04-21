@@ -297,10 +297,10 @@ const Home = () => {
 
                 /* Short Player Modal */
                 .short-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-                .short-modal-content { position: relative; width: 100%; max-width: 420px; animation: modal-reveal 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                .short-modal-content { position: relative; height: 85vh; max-height: 800px; aspect-ratio: 9/16; margin: 0 auto; animation: modal-reveal 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
                 @keyframes modal-reveal { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
                 
-                .short-video-container { width: 100%; aspect-ratio: 9/16; background: #000; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 100px rgba(0,0,0,1); }
+                .short-video-container { width: 100%; height: 100%; background: #000; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 100px rgba(0,0,0,1); }
                 .short-video-container iframe { width: 100%; height: 100%; }
 
                 @media (max-width: 768px) {
