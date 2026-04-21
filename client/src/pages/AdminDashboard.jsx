@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import API from '../api';
-import { Check, X, ExternalLink, User as UserIcon, Film, Plus, Trash2, Upload, PlusCircle } from 'lucide-react';
+import { Check, X, ExternalLink, User as UserIcon, Film, Plus, Trash2, Upload, PlusCircle, Edit2 } from 'lucide-react';
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('purchases');
@@ -124,16 +124,38 @@ const AdminDashboard = () => {
 
             {activeTab === 'catalog' && (
                 <div className="catalog-manager">
-                    <div className="add-anime-form">
-                        <h2>Novo Anime</h2>
-                        <input type="text" placeholder="Título" value={newAnime.title} onChange={e => setNewAnime({...newAnime, title: e.target.value})} />
-                        <button className="auth-btn" onClick={async () => { await API.post('/animes', newAnime); fetchData(); }}>Salvar</button>
+                    <div className="add-anime-form" style={{ background: '#222', padding: '20px', borderRadius: '8px', marginBottom: '20px' }}>
+                        <h2>{newAnime._id ? 'Editar Anime' : 'Novo Anime'}</h2>
+                        <div style={{ display: 'flex', gap: '15px', flexDirection: 'column', marginTop: '15px' }}>
+                            <input type="text" placeholder="Título" value={newAnime.title} onChange={e => setNewAnime({...newAnime, title: e.target.value})} />
+                            <input type="text" placeholder="URL da Capa (Thumbnail)" value={newAnime.thumbnail || ''} onChange={e => setNewAnime({...newAnime, thumbnail: e.target.value})} />
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <button className="auth-btn" onClick={async () => { 
+                                    if (newAnime._id) {
+                                        await API.put(`/animes/${newAnime._id}`, { title: newAnime.title, thumbnail: newAnime.thumbnail });
+                                    } else {
+                                        await API.post('/animes', newAnime); 
+                                    }
+                                    setNewAnime({ title: '', thumbnail: '' });
+                                    fetchData(); 
+                                }}>Salvar</button>
+                                {newAnime._id && (
+                                    <button className="auth-btn" style={{ background: '#555' }} onClick={() => setNewAnime({ title: '', thumbnail: '' })}>Cancelar</button>
+                                )}
+                            </div>
+                        </div>
                     </div>
                     <div className="admin-anime-grid">
                         {animes.map(a => (
                             <div key={a._id} className="admin-anime-card">
                                 <img src={a.thumbnail} alt="" />
-                                <div className="card-controls"><h4>{a.title}</h4><button onClick={() => handleDelete('anime', a._id)}><Trash2 size={16} /></button></div>
+                                <div className="card-controls" style={{ padding: '8px' }}>
+                                    <h4 style={{ flex: 1 }}>{a.title}</h4>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button onClick={() => setNewAnime({ _id: a._id, title: a.title, thumbnail: a.thumbnail })}><Edit2 size={16} color="#aaa" /></button>
+                                        <button onClick={() => handleDelete('anime', a._id)}><Trash2 size={16} color="#e50914" /></button>
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>
