@@ -15,7 +15,7 @@ const AdminDashboard = () => {
         title: '', category: '', description: '', thumbnail: '', 
         seasons: [{ title: 'Temporada 1', price: 100, episodes: [{ title: 'Episódio 1', videoUrl: '' }] }] 
     });
-    const [newManga, setNewManga] = useState({ title: '', thumbnail: '' });
+    const [newManga, setNewManga] = useState({ title: '', description: '', thumbnail: '', author: '', genre: '', price: 0, chapters: [] });
     const [newShort, setNewShort] = useState({ title: '', url: '' });
     const [uploading, setUploading] = useState(false);
 
@@ -134,7 +134,37 @@ const AdminDashboard = () => {
                             <input type="text" placeholder="Título" value={newAnime.title} onChange={e => setNewAnime({...newAnime, title: e.target.value})} />
                             <input type="text" placeholder="URL da Capa (Thumbnail)" value={newAnime.thumbnail || ''} onChange={e => setNewAnime({...newAnime, thumbnail: e.target.value})} />
                             
-                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <textarea placeholder="Descrição Mínima" value={newAnime.description || ''} onChange={e => setNewAnime({...newAnime, description: e.target.value})} rows="3" />
+                            
+                            <div className="seasons-editor" style={{ background: '#111', padding: '15px', borderRadius: '6px' }}>
+                                <h3 style={{ fontSize: '1.1rem', marginBottom: '10px' }}>Temporadas</h3>
+                                {newAnime.seasons?.map((s, sIdx) => (
+                                    <div key={sIdx} className="season-edit-box" style={{ padding: '15px', background: '#333', marginBottom: '15px', borderRadius: '4px' }}>
+                                        <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                                            <input type="text" placeholder="Nome da Temporada" value={s.title} onChange={e => { const updated = [...newAnime.seasons]; updated[sIdx].title = e.target.value; setNewAnime({...newAnime, seasons: updated})}} />
+                                            <input type="number" placeholder="Preço (MT)" value={s.price} onChange={e => { const updated = [...newAnime.seasons]; updated[sIdx].price = e.target.value; setNewAnime({...newAnime, seasons: updated})}} style={{ width: '120px' }} />
+                                            <button className="auth-btn" style={{ margin: 0, padding: '0 15px', width: 'auto', background: '#e50914' }} onClick={() => { const updated = [...newAnime.seasons]; updated.splice(sIdx, 1); setNewAnime({...newAnime, seasons: updated}) }}>Remover</button>
+                                        </div>
+
+                                        <h4 style={{ fontSize: '0.9rem', color: '#aaa', marginBottom: '10px' }}>Episódios desta Temporada</h4>
+                                        {s.episodes?.map((ep, eIdx) => (
+                                            <div key={eIdx} style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
+                                                <input type="text" placeholder="Ep 1" value={ep.title} onChange={e => { const updated = [...newAnime.seasons]; updated[sIdx].episodes[eIdx].title = e.target.value; setNewAnime({...newAnime, seasons: updated})}} style={{ width: '150px' }} />
+                                                <input type="text" placeholder="URL Ext/Cloudinary Vídeo" value={ep.videoUrl} onChange={e => { const updated = [...newAnime.seasons]; updated[sIdx].episodes[eIdx].videoUrl = e.target.value; setNewAnime({...newAnime, seasons: updated})}} />
+                                                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: '#222', padding: '0 10px', borderRadius: '4px' }}>
+                                                    <Upload size={14} color="#aaa" />
+                                                    <input type="file" hidden onChange={e => handleFileUpload(e, {sIdx, eIdx})} accept="video/*" disabled={uploading} />
+                                                </label>
+                                                <button onClick={() => { const updated = [...newAnime.seasons]; updated[sIdx].episodes.splice(eIdx,1); setNewAnime({...newAnime, seasons: updated})}} style={{ background: 'transparent' }}><X size={18} color="#aaa" /></button>
+                                            </div>
+                                        ))}
+                                        <button className="auth-btn" style={{ margin: '10px 0 0', padding: '8px 15px', background: '#444', width: 'auto', fontSize: '0.9rem' }} onClick={() => { const updated = [...newAnime.seasons]; updated[sIdx].episodes.push({ title: `Episódio ${(s.episodes?.length||0)+1}`, videoUrl: '' }); setNewAnime({...newAnime, seasons: updated}) }}>+ Adicionar Episódio</button>
+                                    </div>
+                                ))}
+                                <button className="auth-btn" style={{ margin: '0', padding: '10px', background: '#2e7d32', width: '100%', fontSize: '0.95rem' }} onClick={() => setNewAnime({...newAnime, seasons: [...(newAnime.seasons||[]), { title: `Temporada ${(newAnime.seasons?.length||0)+1}`, price: 100, episodes: [] }]})}>+ Nova Temporada</button>
+                            </div>
+                            
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 0' }}>
                                 <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', background: '#333', padding: '10px', borderRadius: '4px', fontSize: '0.9rem' }}>
                                     <Upload size={16} /> {uploading ? 'A carregar...' : 'Fazer Upload da Imagem'}
                                     <input type="file" hidden onChange={e => handleFileUpload(e, 'anime')} accept="image/*" disabled={uploading} />
@@ -144,15 +174,15 @@ const AdminDashboard = () => {
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <button className="auth-btn" onClick={async () => { 
                                     if (newAnime._id) {
-                                        await API.put(`/animes/${newAnime._id}`, { title: newAnime.title, thumbnail: newAnime.thumbnail });
+                                        await API.put(`/animes/${newAnime._id}`, newAnime);
                                     } else {
                                         await API.post('/animes', newAnime); 
                                     }
-                                    setNewAnime({ title: '', thumbnail: '' });
+                                    setNewAnime({ title: '', category: '', description: '', thumbnail: '', seasons: [{ title: 'Temporada 1', price: 100, episodes: [{ title: 'Episódio 1', videoUrl: '' }] }] });
                                     fetchData(); 
-                                }}>Salvar</button>
+                                }}>Salvar Anime Completo</button>
                                 {newAnime._id && (
-                                    <button className="auth-btn" style={{ background: '#555' }} onClick={() => setNewAnime({ title: '', thumbnail: '' })}>Cancelar</button>
+                                    <button className="auth-btn" style={{ background: '#555' }} onClick={() => setNewAnime({ title: '', category: '', description: '', thumbnail: '', seasons: [{ title: 'Temporada 1', price: 100, episodes: [{ title: 'Episódio 1', videoUrl: '' }] }] })}>Cancelar</button>
                                 )}
                             </div>
                         </div>
@@ -164,7 +194,7 @@ const AdminDashboard = () => {
                                 <div className="card-controls" style={{ padding: '8px' }}>
                                     <h4 style={{ flex: 1 }}>{a.title}</h4>
                                     <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button onClick={() => setNewAnime({ _id: a._id, title: a.title, thumbnail: a.thumbnail })}><Edit2 size={16} color="#aaa" /></button>
+                                        <button onClick={() => setNewAnime(JSON.parse(JSON.stringify(a)))}><Edit2 size={16} color="#aaa" /></button>
                                         <button onClick={() => handleDelete('anime', a._id)}><Trash2 size={16} color="#e50914" /></button>
                                     </div>
                                 </div>
@@ -182,7 +212,39 @@ const AdminDashboard = () => {
                             <input type="text" placeholder="Título" value={newManga.title} onChange={e => setNewManga({...newManga, title: e.target.value})} />
                             <input type="text" placeholder="URL da Capa (Thumbnail)" value={newManga.thumbnail || ''} onChange={e => setNewManga({...newManga, thumbnail: e.target.value})} />
                             
-                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <input type="text" placeholder="URL da Capa (Thumbnail)" value={newManga.thumbnail || ''} onChange={e => setNewManga({...newManga, thumbnail: e.target.value})} />
+                            
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <input type="text" placeholder="Autor" value={newManga.author || ''} onChange={e => setNewManga({...newManga, author: e.target.value})} />
+                                <input type="text" placeholder="Gênero" value={newManga.genre || ''} onChange={e => setNewManga({...newManga, genre: e.target.value})} />
+                                <input type="number" placeholder="Preço (MT)" value={newManga.price || 0} onChange={e => setNewManga({...newManga, price: Number(e.target.value)})} />
+                            </div>
+                            <textarea placeholder="Descrição do Mangá" value={newManga.description || ''} onChange={e => setNewManga({...newManga, description: e.target.value})} rows="3" />
+
+                            <div className="seasons-editor" style={{ background: '#111', padding: '15px', borderRadius: '6px' }}>
+                                <h3 style={{ fontSize: '1.1rem', marginBottom: '10px' }}>Capítulos</h3>
+                                {newManga.chapters?.map((c, cIdx) => (
+                                    <div key={cIdx} className="season-edit-box" style={{ padding: '15px', background: '#333', marginBottom: '15px', borderRadius: '4px' }}>
+                                        <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                                            <input type="number" placeholder="Nº" value={c.number} onChange={e => { const updated = [...newManga.chapters]; updated[cIdx].number = e.target.value; setNewManga({...newManga, chapters: updated})}} style={{ width: '80px' }} />
+                                            <input type="text" placeholder="Título do Capítulo" value={c.title} onChange={e => { const updated = [...newManga.chapters]; updated[cIdx].title = e.target.value; setNewManga({...newManga, chapters: updated})}} />
+                                            <button className="auth-btn" style={{ margin: 0, padding: '0 15px', width: 'auto', background: '#e50914' }} onClick={() => { const updated = [...newManga.chapters]; updated.splice(cIdx, 1); setNewManga({...newManga, chapters: updated}) }}>Remover</button>
+                                        </div>
+
+                                        <h4 style={{ fontSize: '0.9rem', color: '#aaa', marginBottom: '10px' }}>Páginas (URLs)</h4>
+                                        {c.pages?.map((pg, pIdx) => (
+                                            <div key={pIdx} style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
+                                                <input type="text" placeholder="URL da Página / Imagem" value={pg} onChange={e => { const updated = [...newManga.chapters]; updated[cIdx].pages[pIdx] = e.target.value; setNewManga({...newManga, chapters: updated})}} />
+                                                <button onClick={() => { const updated = [...newManga.chapters]; updated[cIdx].pages.splice(pIdx,1); setNewManga({...newManga, chapters: updated})}} style={{ background: 'transparent' }}><X size={18} color="#aaa" /></button>
+                                            </div>
+                                        ))}
+                                        <button className="auth-btn" style={{ margin: '10px 0 0', padding: '8px 15px', background: '#444', width: 'auto', fontSize: '0.9rem' }} onClick={() => { const updated = [...newManga.chapters]; updated[cIdx].pages.push(''); setNewManga({...newManga, chapters: updated}) }}>+ Adicionar Página (URL)</button>
+                                    </div>
+                                ))}
+                                <button className="auth-btn" style={{ margin: '0', padding: '10px', background: '#2e7d32', width: '100%', fontSize: '0.95rem' }} onClick={() => setNewManga({...newManga, chapters: [...(newManga.chapters||[]), { number: (newManga.chapters?.length||0)+1, title: '', pages: [] }]})}>+ Novo Capítulo</button>
+                            </div>
+                            
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 0' }}>
                                 <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', background: '#333', padding: '10px', borderRadius: '4px', fontSize: '0.9rem' }}>
                                     <Upload size={16} /> {uploading ? 'A carregar...' : 'Fazer Upload da Imagem'}
                                     <input type="file" hidden onChange={e => handleFileUpload(e, 'manga')} accept="image/*" disabled={uploading} />
@@ -193,15 +255,15 @@ const AdminDashboard = () => {
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <button className="auth-btn" onClick={async () => { 
                                     if (newManga._id) {
-                                        await API.put(`/mangas/${newManga._id}`, { title: newManga.title, thumbnail: newManga.thumbnail });
+                                        await API.put(`/mangas/${newManga._id}`, newManga);
                                     } else {
                                         await API.post('/mangas', newManga); 
                                     }
-                                    setNewManga({ title: '', thumbnail: '' });
+                                    setNewManga({ title: '', description: '', thumbnail: '', author: '', genre: '', price: 0, chapters: [] });
                                     fetchData(); 
-                                }}>Salvar</button>
+                                }}>Salvar Mangá Completo</button>
                                 {newManga._id && (
-                                    <button className="auth-btn" style={{ background: '#555' }} onClick={() => setNewManga({ title: '', thumbnail: '' })}>Cancelar</button>
+                                    <button className="auth-btn" style={{ background: '#555' }} onClick={() => setNewManga({ title: '', description: '', thumbnail: '', author: '', genre: '', price: 0, chapters: [] })}>Cancelar</button>
                                 )}
                             </div>
                         </div>
@@ -214,7 +276,7 @@ const AdminDashboard = () => {
                                 <div className="card-controls" style={{ padding: '8px' }}>
                                     <h4 style={{ flex: 1 }}>{m.title}</h4>
                                     <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button onClick={() => setNewManga({ _id: m._id, title: m.title, thumbnail: m.thumbnail })}><Edit2 size={16} color="#aaa" /></button>
+                                        <button onClick={() => setNewManga(JSON.parse(JSON.stringify(m)))}><Edit2 size={16} color="#aaa" /></button>
                                         <button onClick={() => handleDelete('manga', m._id)}><Trash2 size={16} color="#e50914" /></button>
                                     </div>
                                 </div>
