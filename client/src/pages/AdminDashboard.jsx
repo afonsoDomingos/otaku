@@ -15,6 +15,7 @@ const AdminDashboard = () => {
         title: '', category: '', description: '', thumbnail: '', 
         seasons: [{ title: 'Temporada 1', price: 100, episodes: [{ title: 'Episódio 1', videoUrl: '' }] }] 
     });
+    const [newManga, setNewManga] = useState({ title: '', thumbnail: '' });
     const [newShort, setNewShort] = useState({ title: '', url: '' });
     const [uploading, setUploading] = useState(false);
 
@@ -69,8 +70,11 @@ const AdminDashboard = () => {
         const formData = new FormData();
         formData.append('file', file);
         try {
-            const { data } = await API.post('/animes/upload', formData);
-            if (target === 'thumbnail') setNewAnime({...newAnime, thumbnail: data.url});
+            const { data } = await API.post('/animes/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            if (target === 'anime') setNewAnime({...newAnime, thumbnail: data.url});
+            else if (target === 'manga') setNewManga({...newManga, thumbnail: data.url});
             else {
                 const updated = [...newAnime.seasons];
                 updated[target.sIdx].episodes[target.eIdx].videoUrl = data.url;
@@ -129,6 +133,14 @@ const AdminDashboard = () => {
                         <div style={{ display: 'flex', gap: '15px', flexDirection: 'column', marginTop: '15px' }}>
                             <input type="text" placeholder="Título" value={newAnime.title} onChange={e => setNewAnime({...newAnime, title: e.target.value})} />
                             <input type="text" placeholder="URL da Capa (Thumbnail)" value={newAnime.thumbnail || ''} onChange={e => setNewAnime({...newAnime, thumbnail: e.target.value})} />
+                            
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', background: '#333', padding: '10px', borderRadius: '4px', fontSize: '0.9rem' }}>
+                                    <Upload size={16} /> {uploading ? 'A carregar...' : 'Fazer Upload da Imagem'}
+                                    <input type="file" hidden onChange={e => handleFileUpload(e, 'anime')} accept="image/*" disabled={uploading} />
+                                </label>
+                                <span style={{ fontSize: '0.8rem', color: '#888' }}>ou insira um URL no campo acima</span>
+                            </div>
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <button className="auth-btn" onClick={async () => { 
                                     if (newAnime._id) {
@@ -163,13 +175,52 @@ const AdminDashboard = () => {
             )}
 
             {activeTab === 'mangas' && (
-                <div className="admin-anime-grid">
-                    {mangas.map(m => (
-                        <div key={m._id} className="admin-anime-card">
-                            <img src={m.thumbnail} alt="" />
-                            <div className="card-controls"><h4>{m.title}</h4><button onClick={() => handleDelete('manga', m._id)}><Trash2 size={16} /></button></div>
+                <div className="catalog-manager">
+                    <div className="add-anime-form" style={{ background: '#222', padding: '20px', borderRadius: '8px', marginBottom: '20px' }}>
+                        <h2>{newManga._id ? 'Editar Mangá' : 'Novo Mangá'}</h2>
+                        <div style={{ display: 'flex', gap: '15px', flexDirection: 'column', marginTop: '15px' }}>
+                            <input type="text" placeholder="Título" value={newManga.title} onChange={e => setNewManga({...newManga, title: e.target.value})} />
+                            <input type="text" placeholder="URL da Capa (Thumbnail)" value={newManga.thumbnail || ''} onChange={e => setNewManga({...newManga, thumbnail: e.target.value})} />
+                            
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', background: '#333', padding: '10px', borderRadius: '4px', fontSize: '0.9rem' }}>
+                                    <Upload size={16} /> {uploading ? 'A carregar...' : 'Fazer Upload da Imagem'}
+                                    <input type="file" hidden onChange={e => handleFileUpload(e, 'manga')} accept="image/*" disabled={uploading} />
+                                </label>
+                                <span style={{ fontSize: '0.8rem', color: '#888' }}>ou insira um URL no campo acima</span>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <button className="auth-btn" onClick={async () => { 
+                                    if (newManga._id) {
+                                        await API.put(`/mangas/${newManga._id}`, { title: newManga.title, thumbnail: newManga.thumbnail });
+                                    } else {
+                                        await API.post('/mangas', newManga); 
+                                    }
+                                    setNewManga({ title: '', thumbnail: '' });
+                                    fetchData(); 
+                                }}>Salvar</button>
+                                {newManga._id && (
+                                    <button className="auth-btn" style={{ background: '#555' }} onClick={() => setNewManga({ title: '', thumbnail: '' })}>Cancelar</button>
+                                )}
+                            </div>
                         </div>
-                    ))}
+                    </div>
+
+                    <div className="admin-anime-grid">
+                        {mangas.map(m => (
+                            <div key={m._id} className="admin-anime-card">
+                                <img src={m.thumbnail} alt="" />
+                                <div className="card-controls" style={{ padding: '8px' }}>
+                                    <h4 style={{ flex: 1 }}>{m.title}</h4>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button onClick={() => setNewManga({ _id: m._id, title: m.title, thumbnail: m.thumbnail })}><Edit2 size={16} color="#aaa" /></button>
+                                        <button onClick={() => handleDelete('manga', m._id)}><Trash2 size={16} color="#e50914" /></button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
 
