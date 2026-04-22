@@ -460,7 +460,6 @@ const AdminDashboard = () => {
                         </tbody>
                     </table>
                 </div>
-                </div>
             )}
 
             {activeTab === 'convidados' && (
