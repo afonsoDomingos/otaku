@@ -3,7 +3,8 @@ import { Music, Pause, Play, Volume2, Download } from 'lucide-react';
 
 const MusicPlayer = () => {
     const [isPlaying, setIsPlaying] = useState(false);
-    const [showVisualizer, setShowVisualizer] = useState(false);
+    const [downloadProgress, setDownloadProgress] = useState(0);
+    const [isDownloading, setIsDownloading] = useState(false);
     const audioRef = useRef(null);
 
     const togglePlay = () => {
@@ -13,6 +14,47 @@ const MusicPlayer = () => {
             audioRef.current.play();
         }
         setIsPlaying(!isPlaying);
+    };
+
+    const handleDownload = async () => {
+        const fileUrl = "/Lil Matimbe feat Vibe - otaku.mp3.mpeg";
+        const fileName = "OtakuZone - Trilha Sonora.mp3";
+        
+        setIsDownloading(true);
+        setDownloadProgress(0);
+
+        try {
+            const response = await fetch(fileUrl);
+            const reader = response.body.getReader();
+            const contentLength = +response.headers.get('Content-Length');
+            
+            let receivedLength = 0;
+            let chunks = [];
+            
+            while(true) {
+                const {done, value} = await reader.read();
+                if (done) break;
+                chunks.push(value);
+                receivedLength += value.length;
+                setDownloadProgress(Math.round((receivedLength / contentLength) * 100));
+            }
+
+            const blob = new Blob(chunks);
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            alert("Erro ao baixar a trilha.");
+        } finally {
+            setTimeout(() => {
+                setIsDownloading(false);
+                setDownloadProgress(0);
+            }, 1000);
+        }
     };
 
     return (
@@ -37,14 +79,22 @@ const MusicPlayer = () => {
                 <span className="music-label">{isPlaying ? 'Tocando' : 'Trilha'}</span>
             </div>
             
-            <a 
-                href="/Lil Matimbe feat Vibe - otaku.mp3.mpeg" 
-                download="OtakuZone - Trilha Sonora.mp3"
-                className="music-download-btn"
+            <button 
+                onClick={handleDownload}
+                className={`music-download-btn ${isDownloading ? 'loading' : ''}`}
                 title="Baixar Trilha"
+                disabled={isDownloading}
             >
-                <Download size={14} />
-            </a>
+                {isDownloading ? (
+                    <div className="dl-progress-container">
+                        <svg viewBox="0 0 36 36" className="circular-chart">
+                            <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path className="circle" strokeDasharray={`${downloadProgress}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <span className="dl-percent">{downloadProgress}%</span>
+                    </div>
+                ) : <Download size={14} />}
+            </button>
 
             <style>{`
                 .music-nav-item {
@@ -64,14 +114,30 @@ const MusicPlayer = () => {
                     color: #888;
                     transition: all 0.3s;
                     border: 1px solid rgba(255,255,255,0.1);
+                    cursor: pointer;
+                    position: relative;
                 }
 
-                .music-download-btn:hover {
+                .music-download-btn:hover:not(:disabled) {
                     background: var(--primary);
                     color: white;
                     border-color: var(--primary);
                     transform: scale(1.1);
                 }
+
+                .dl-progress-container {
+                    position: relative;
+                    width: 28px;
+                    height: 28px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .circular-chart { display: block; width: 100%; height: 100%; }
+                .circle-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 3.8; }
+                .circle { fill: none; stroke: var(--primary); stroke-width: 3.8; stroke-linecap: round; transition: stroke-dasharray 0.3s ease; }
+                .dl-percent { position: absolute; font-size: 8px; font-weight: bold; color: #fff; }
 
                 .music-btn {
                     display: flex;
