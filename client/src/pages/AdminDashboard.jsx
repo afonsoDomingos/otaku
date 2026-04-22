@@ -10,6 +10,7 @@ const AdminDashboard = () => {
     const [shorts, setShorts] = useState([]);
     const [interviews, setInterviews] = useState([]);
     const [guests, setGuests] = useState([]);
+    const [partners, setPartners] = useState([]);
     const [stats, setStats] = useState({ pending: 0, totalSales: 0, revenue: 0, approvedCount: 0 });
     
     const [newAnime, setNewAnime] = useState({ 
@@ -28,13 +29,14 @@ const AdminDashboard = () => {
 
     const fetchData = async () => {
         try {
-            const [pRes, aRes, mRes, sRes, iRes, gRes] = await Promise.all([
+            const [pRes, aRes, mRes, sRes, iRes, gRes, prRes] = await Promise.all([
                 API.get('/purchases/admin'),
                 API.get('/animes'),
                 API.get('/mangas'),
                 API.get('/shorts'),
                 API.get('/interviews/admin'),
-                API.get('/guests').catch(() => ({ data: [] }))
+                API.get('/guests').catch(() => ({ data: [] })),
+                API.get('/partners/admin').catch(() => ({ data: [] }))
             ]);
             const purchases = Array.isArray(pRes.data) ? pRes.data : [];
             const animeList = Array.isArray(aRes.data) ? aRes.data : [];
@@ -44,6 +46,7 @@ const AdminDashboard = () => {
             setShorts(Array.isArray(sRes.data) ? sRes.data : []);
             setInterviews(Array.isArray(iRes.data) ? iRes.data : []);
             setGuests(Array.isArray(gRes.data) ? gRes.data : []);
+            setPartners(Array.isArray(prRes.data) ? prRes.data : []);
             
             const approved = purchases.filter(p => p.status === 'approved');
             setStats({
@@ -181,9 +184,9 @@ const AdminDashboard = () => {
 
             <h1 style={{marginBottom: '30px'}}>Painel Admin</h1>
             <div className="admin-tabs">
-                {['purchases', 'catalog', 'mangas', 'shorts', 'podcast', 'convidados'].map(tab => (
+                {['purchases', 'catalog', 'mangas', 'shorts', 'podcast', 'convidados', 'parcerias'].map(tab => (
                     <button key={tab} className={activeTab === tab ? 'active' : ''} onClick={() => setActiveTab(tab)}>
-                        {tab === 'purchases' ? 'Vendas' : tab === 'catalog' ? 'Animes' : tab === 'mangas' ? 'Mangás' : tab === 'shorts' ? 'Shorts' : tab === 'podcast' ? 'Podcast' : 'Convidados'}
+                        {tab === 'purchases' ? 'Vendas' : tab === 'catalog' ? 'Animes' : tab === 'mangas' ? 'Mangás' : tab === 'shorts' ? 'Shorts' : tab === 'podcast' ? 'Podcast' : tab === 'convidados' ? 'Convidados' : 'Parcerias'}
                     </button>
                 ))}
             </div>
@@ -485,6 +488,42 @@ const AdminDashboard = () => {
                             ))}
                         </div>
                     </div>
+                </div>
+            )}
+
+            {activeTab === 'parcerias' && (
+                <div className="purchases-table">
+                    <h2 style={{padding: '15px 20px', margin: 0, borderBottom: '1px solid #333'}}>Propostas de Parceria</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Empresa / Entidade</th>
+                                <th>Email</th>
+                                <th>Proposta</th>
+                                <th>Data</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {partners.length === 0 ? (
+                                <tr><td colSpan="5" style={{textAlign: 'center', padding: '30px'}}>Nenhuma proposta encontrada.</td></tr>
+                            ) : (
+                                partners.map(p => (
+                                    <tr key={p._id}>
+                                        <td style={{fontWeight: 'bold'}}>{p.companyName}</td>
+                                        <td><a href={`mailto:${p.contactEmail}`} style={{color: '#e50914'}}>{p.contactEmail}</a></td>
+                                        <td style={{maxWidth: '300px', whiteSpace: 'pre-wrap', fontSize: '0.85rem', color: '#ccc'}}>{p.proposal}</td>
+                                        <td>{new Date(p.createdAt).toLocaleDateString('pt-PT')}</td>
+                                        <td>
+                                            <button onClick={() => handleDelete('partner', p._id)} style={{background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', padding: '6px 10px', borderRadius: '4px'}}>
+                                                Eliminar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             )}
 

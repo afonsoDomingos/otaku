@@ -16,6 +16,9 @@ const Home = () => {
     const [guests, setGuests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeHero, setActiveHero] = useState(0);
+    const [showPartnerModal, setShowPartnerModal] = useState(false);
+    const [partnerForm, setPartnerForm] = useState({ companyName: '', contactEmail: '', proposal: '' });
+    const [partnerStatus, setPartnerStatus] = useState('');
 
     const fetchData = async () => {
         try {
@@ -63,6 +66,22 @@ const Home = () => {
         (anime.title || "").toLowerCase().includes((searchQuery || "").trim().toLowerCase()) ||
         (anime.category || "").toLowerCase().includes((searchQuery || "").trim().toLowerCase())
     );
+
+    const handlePartnerSubmit = async (e) => {
+        e.preventDefault();
+        setPartnerStatus('A enviar...');
+        try {
+            await API.post('/partners/submit', partnerForm);
+            setPartnerStatus('sucesso');
+            setTimeout(() => {
+                setShowPartnerModal(false);
+                setPartnerStatus('');
+                setPartnerForm({ companyName: '', contactEmail: '', proposal: '' });
+            }, 3000);
+        } catch (error) {
+            setPartnerStatus('erro');
+        }
+    };
 
     if (loading) return (
         <div className="skeleton-container">
@@ -291,12 +310,76 @@ const Home = () => {
                                     </div>
                                     <p>Plataforma de Inscrições</p>
                                 </a>
-                                {/* Podes adicionar mais parceiros aqui depois */}
+                                
+                                {/* Torna-te Parceiro Card */}
+                                <div 
+                                    className="partner-card become-partner-card"
+                                    onClick={() => setShowPartnerModal(true)}
+                                >
+                                    <div className="partner-logo" style={{ background: 'transparent', border: '2px dashed var(--primary)' }}>
+                                        <h3 style={{ color: 'var(--primary)' }}>+ JUNTAR-SE</h3>
+                                    </div>
+                                    <p>Torna-te Nosso Parceiro</p>
+                                </div>
                             </div>
                         </section>
                     </>
                 )}
             </div>
+
+            {/* Partner Modal */}
+            {showPartnerModal && (
+                <div className="modal-overlay" onClick={() => setShowPartnerModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px', background: '#141414', padding: '30px', borderRadius: '12px', border: '1px solid #333' }}>
+                        <button className="close-btn" onClick={() => setShowPartnerModal(false)}><X size={24} /></button>
+                        <h2 style={{ marginBottom: '20px', color: '#fff' }}>Proposta de Parceria</h2>
+                        {partnerStatus === 'sucesso' ? (
+                            <div style={{ padding: '20px', background: 'rgba(46, 125, 50, 0.2)', color: '#a5d6a7', borderRadius: '8px', textAlign: 'center' }}>
+                                Proposta enviada com sucesso! Entraremos em contacto em breve.
+                            </div>
+                        ) : (
+                            <form onSubmit={handlePartnerSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>Nome da Empresa / Entidade</label>
+                                    <input 
+                                        type="text" required 
+                                        value={partnerForm.companyName} 
+                                        onChange={e => setPartnerForm({...partnerForm, companyName: e.target.value})}
+                                        style={{ width: '100%', padding: '12px', background: '#0a0a0a', border: '1px solid #333', color: '#fff', borderRadius: '6px' }} 
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>Email de Contacto</label>
+                                    <input 
+                                        type="email" required 
+                                        value={partnerForm.contactEmail} 
+                                        onChange={e => setPartnerForm({...partnerForm, contactEmail: e.target.value})}
+                                        style={{ width: '100%', padding: '12px', background: '#0a0a0a', border: '1px solid #333', color: '#fff', borderRadius: '6px' }} 
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>Proposta / Ideia</label>
+                                    <textarea 
+                                        required rows="4" 
+                                        value={partnerForm.proposal} 
+                                        onChange={e => setPartnerForm({...partnerForm, proposal: e.target.value})}
+                                        placeholder="Como podemos trabalhar juntos?"
+                                        style={{ width: '100%', padding: '12px', background: '#0a0a0a', border: '1px solid #333', color: '#fff', borderRadius: '6px', resize: 'vertical' }} 
+                                    />
+                                </div>
+                                {partnerStatus === 'erro' && <p style={{ color: '#ef4444', fontSize: '0.9rem' }}>Erro ao enviar. Tenta novamente.</p>}
+                                <button 
+                                    type="submit" 
+                                    disabled={partnerStatus === 'A enviar...'}
+                                    style={{ padding: '14px', background: 'var(--primary)', color: '#fff', fontWeight: 'bold', borderRadius: '6px', marginTop: '10px' }}
+                                >
+                                    {partnerStatus === 'A enviar...' ? 'A enviar...' : 'Enviar Proposta'}
+                                </button>
+                            </form>
+                        )}
+                    </div>
+                </div>
+            )}
 
             <Footer />
 
@@ -325,7 +408,21 @@ const Home = () => {
                     100% { clip-path: inset(0 0% 0 0); }
                 }
                 .hero-content p { font-size: 1.25rem; line-height: 1.4; color: #f3f3f3; margin-bottom: 30px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; max-width: 600px; }
-                .hero-btns { display: flex; gap: 15px; }
+                .hero-btns { display: flex; gap: 15px; flex-wrap: wrap; position: relative; z-index: 20; }
+                @media (max-width: 768px) {
+                    .hero-btns {
+                        margin-bottom: 20px;
+                    }
+                    .hero-content {
+                        transform: translateY(10px);
+                    }
+                    .hero-btns button {
+                        flex: 1;
+                        min-width: 140px;
+                        padding: 10px 15px;
+                        font-size: 0.9rem;
+                    }
+                }
                 .carousel-indicators { position: absolute; bottom: 200px; left: 4%; display: flex; gap: 12px; z-index: 10; }
                 .indicator { width: 35px; height: 3px; background: rgba(255,255,255,0.25); cursor: pointer; border-radius: 2px; transition: 0.4s; }
                 .indicator.active { background: #E50914; width: 60px; box-shadow: 0 0 10px #E50914; }
