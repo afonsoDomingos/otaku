@@ -216,8 +216,8 @@ const MusicPlayer = () => {
                 }
 
                 @media (max-width: 768px) {
-                    .music-label { display: none; }
-                    .music-nav-item { padding: 4px; background: none; border: none; gap: 5px; }
+                    .music-label { font-size: 0.65rem; max-width: 80px; display: block; }
+                    .music-nav-item { padding: 4px; background: none; border: none; gap: 4px; }
                     .nav-visualizer { display: none; }
                 }
             `}</style>

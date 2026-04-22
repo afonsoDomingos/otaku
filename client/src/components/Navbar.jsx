@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSearch } from '../context/SearchContext';
-import { Search, Bell, User, LogOut, X, Menu, ChevronDown } from 'lucide-react';
+import { Search, Bell, User, LogOut, X, Menu, ChevronDown, Plus } from 'lucide-react';
 import MusicPlayer from './MusicPlayer';
 
 const Navbar = () => {
@@ -191,7 +191,7 @@ const Navbar = () => {
                 @media (max-width: 900px) {
                     .nav-desktop-links, .desktop-music { display: none; }
                     .mobile-menu-btn { display: block; }
-                    .logo { font-size: 1.3rem; }
+                    .logo { font-size: 1.1rem; }
                     .search-box input { width: 100px; }
                 }
 
