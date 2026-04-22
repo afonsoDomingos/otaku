@@ -76,7 +76,7 @@ const MusicPlayer = () => {
                         </div>
                     ) : <Music size={18} />}
                 </div>
-                <span className="music-label">{isPlaying ? 'Tocando: Lil Matimbe Ft Vibe - Otaku' : 'Lil Matimbe Ft Vibe - Otaku'}</span>
+                <span className="music-label">{isPlaying ? 'Lil Matimbe Ft Vibe - Otaku' : 'Trilha'}</span>
             </div>
             
             <button 
