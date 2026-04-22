@@ -719,14 +719,23 @@ const Home = () => {
                 }
 
                 @media (max-width: 768px) {
-                    .hero-carousel { height: 85vh; margin-bottom: 50px; }
+                    .hero-carousel { height: 85vh; margin-bottom: 60px; }
                     .hero-content { padding: 0 5%; padding-top: 42vh; }
-                    .hero-content h1 { font-size: 2.2rem; text-align: left; margin-bottom: 10px; line-height: 1.1; }
-                    .hero-content p { font-size: 0.9rem; text-align: left; -webkit-line-clamp: 3; line-height: 1.4; margin-bottom: 15px; }
-                    .featured-badge { padding: 4px 10px; font-size: 0.75rem; border-left-width: 2px; }
+                    .hero-content h1 { font-size: 2.1rem; text-align: left; margin-bottom: 10px; line-height: 1.1; }
+                    .hero-content p { font-size: 0.85rem; text-align: left; -webkit-line-clamp: 3; line-height: 1.4; margin-bottom: 20px; }
+                    .featured-badge { padding: 6px 12px; font-size: 0.75rem; border-left-width: 3px; margin-bottom: 15px; }
                     .hero-btns { flex-direction: column; width: 100%; align-items: stretch; margin-top: 5px; gap: 10px; }
                     .hero-btns button { width: 100%; justify-content: center; padding: 12px; font-size: 1rem; border-radius: 4px; }
                     
+                    .results-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                        gap: 20px 15px;
+                        padding: 20px 5%;
+                    }
+                    .results-grid .anime-card { flex: none; width: 100%; }
+                    .results-grid .anime-card img { height: 195px; }
+
                     .main-content { margin-top: 0; padding-top: 10px; }
                     .row-container { margin-bottom: 30px; }
                     .row-title { font-size: 1.3rem; margin-bottom: 15px; }

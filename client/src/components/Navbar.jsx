@@ -191,10 +191,10 @@ const Navbar = () => {
                 @media (max-width: 900px) {
                     .nav-desktop-links, .desktop-music { display: none; }
                     .mobile-menu-btn { display: block; }
-                    .logo { font-size: 0.9rem; margin-right: 5px; }
-                    .nav-right { gap: 6px; }
-                    .search-box input { width: 70px; }
-                    .nav-icon { width: 16px; }
+                    .logo { font-size: 0.85rem; margin-right: 5px; }
+                    .nav-right { gap: 5px; }
+                    .search-box input { width: 60px; }
+                    .nav-icon { width: 14px; }
                 }
 
                 @media (max-width: 480px) {
