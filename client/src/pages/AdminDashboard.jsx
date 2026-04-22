@@ -653,17 +653,25 @@ const AdminDashboard = () => {
                             <p style={{fontSize: '2rem', fontWeight: 900}}>{analytics.totalOnline || 0}</p>
                             <span style={{fontSize: '0.8rem', color: '#888'}}>({analytics.onlineUsers} usuários, {analytics.onlineVisitors} visitantes)</span>
                         </div>
+                        <div className="stat-card" style={{background: 'var(--surface)', padding: '25px', borderRadius: '12px', textAlign: 'center', border: '1px solid #3b82f6'}}>
+                            <h4 style={{color: '#3b82f6', marginBottom: '10px'}}>Plays da Trilha</h4>
+                            <p style={{fontSize: '2rem', fontWeight: 900}}>{analytics.musicStats?.plays || 0}</p>
+                        </div>
+                        <div className="stat-card" style={{background: 'var(--surface)', padding: '25px', borderRadius: '12px', textAlign: 'center', border: '1px solid #f59e0b'}}>
+                            <h4 style={{color: '#f59e0b', marginBottom: '10px'}}>Downloads da Trilha</h4>
+                            <p style={{fontSize: '2rem', fontWeight: 900}}>{analytics.musicStats?.downloads || 0}</p>
+                        </div>
                     </div>
 
-                    <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px'}}>
+                    <div className="analytics-geo-grid">
                         <div style={{background: 'var(--surface)', padding: '25px', borderRadius: '12px'}}>
                             <h3 style={{marginBottom: '20px', fontSize: '1.2rem'}}>Visitantes por País</h3>
                             <div style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
                                 {(analytics.visitorCountries || []).map(c => (
                                     <div key={c._id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                        <span>{c._id}</span>
-                                        <div style={{display: 'flex', alignItems: 'center', gap: '10px', flex: 1, margin: '0 20px'}}>
-                                            <div style={{height: '8px', background: 'var(--primary)', width: `${(c.count / analytics.onlineVisitors) * 100}%`, borderRadius: '4px'}} />
+                                        <span style={{fontSize: '0.9rem'}}>{c._id}</span>
+                                        <div style={{display: 'flex', alignItems: 'center', gap: '10px', flex: 1, margin: '0 15px'}}>
+                                            <div style={{height: '6px', background: 'var(--primary)', width: `${(c.count / (analytics.onlineVisitors || 1)) * 100}%`, borderRadius: '4px'}} />
                                         </div>
                                         <span style={{fontWeight: 'bold'}}>{c.count}</span>
                                     </div>
@@ -676,9 +684,9 @@ const AdminDashboard = () => {
                             <div style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
                                 {(analytics.userCountries || []).map(c => (
                                     <div key={c._id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                        <span>{c._id}</span>
-                                        <div style={{display: 'flex', alignItems: 'center', gap: '10px', flex: 1, margin: '0 20px'}}>
-                                            <div style={{height: '8px', background: '#3b82f6', width: `${(c.count / analytics.totalUsers) * 100}%`, borderRadius: '4px'}} />
+                                        <span style={{fontSize: '0.9rem'}}>{c._id}</span>
+                                        <div style={{display: 'flex', alignItems: 'center', gap: '10px', flex: 1, margin: '0 15px'}}>
+                                            <div style={{height: '6px', background: '#3b82f6', width: `${(c.count / (analytics.totalUsers || 1)) * 100}%`, borderRadius: '4px'}} />
                                         </div>
                                         <span style={{fontWeight: 'bold'}}>{c.count}</span>
                                     </div>
@@ -707,32 +715,19 @@ const AdminDashboard = () => {
                 .card-controls { padding: 8px; display: flex; justify-content: space-between; align-items: center; }
                 .card-controls h4 { font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
                 
-                .notification-toast {
-                    position: fixed;
-                    top: 90px;
-                    right: 40px;
-                    padding: 15px 25px;
-                    background: #181818;
-                    color: white;
-                    border-radius: 8px;
-                    border-left: 4px solid #4ade80;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    z-index: 10000;
-                    animation: slideIn 0.3s ease-out;
-                }
-                .notification-toast.error { border-left-color: #ff4444; }
-                
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
+                .analytics-geo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
                 
                 @keyframes shimmer {
                     0% { background-position: 200% 0; }
                     100% { background-position: -200% 0; }
+                }
+
+                @media (max-width: 900px) {
+                    .analytics-geo-grid { grid-template-columns: 1fr; }
+                    .admin-tabs { gap: 10px; }
+                    .admin-tabs button { padding: 10px 15px; font-size: 0.85rem; }
+                    .stats-grid { grid-template-columns: 1fr !important; }
+                    .stat-card { padding: 20px !important; }
                 }
             `}</style>
         </div>

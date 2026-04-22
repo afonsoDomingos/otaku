@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Music, Pause, Play, Volume2, Download } from 'lucide-react';
+import API from '../api';
 
 const MusicPlayer = () => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -12,6 +13,8 @@ const MusicPlayer = () => {
             audioRef.current.pause();
         } else {
             audioRef.current.play();
+            // Track play only when starting
+            API.post('/analytics/music/play').catch(e => console.error(e));
         }
         setIsPlaying(!isPlaying);
     };
@@ -47,6 +50,9 @@ const MusicPlayer = () => {
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
+            
+            // Track download
+            API.post('/analytics/music/download').catch(e => console.error(e));
         } catch (error) {
             alert("Erro ao baixar a trilha.");
         } finally {
