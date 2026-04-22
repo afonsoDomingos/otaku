@@ -86,14 +86,27 @@ const Navbar = () => {
                 }
                 .logo {
                     font-size: 1.8rem;
-                    font-weight: 800;
+                    font-weight: 900;
                     color: var(--primary);
                     margin-right: 25px;
-                    text-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
+                    letter-spacing: -1px;
+                    display: inline-block;
+                    text-shadow: 0 0 10px rgba(229, 9, 20, 0.8), 0 0 20px rgba(229, 9, 20, 0.4);
+                    animation: logo-pulse 3s ease-in-out infinite alternate;
+                    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), text-shadow 0.3s;
                 }
                 .logo span {
                     color: white;
-                    text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+                    text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+                }
+                @keyframes logo-pulse {
+                    0% { text-shadow: 0 0 10px rgba(229, 9, 20, 0.6), 0 0 20px rgba(229, 9, 20, 0.2); }
+                    100% { text-shadow: 0 0 15px rgba(229, 9, 20, 1), 0 0 30px rgba(229, 9, 20, 0.6), 0 0 45px rgba(229, 9, 20, 0.2); }
+                }
+                .logo:hover {
+                    transform: scale(1.08) rotate(-1deg);
+                    animation-play-state: paused;
+                    text-shadow: 0 0 25px rgba(229, 9, 20, 1), 0 0 50px rgba(229, 9, 20, 0.8);
                 }
                 .nav-left {
                     display: flex;
