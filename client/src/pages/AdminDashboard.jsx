@@ -165,12 +165,6 @@ const AdminDashboard = () => {
 
     return (
         <div className="admin-page container" style={{paddingTop: '100px'}}>
-            {notification.show && (
-                <div className={`notification-toast ${notification.type}`}>
-                    {notification.type === 'success' ? <Check size={18} /> : <X size={18} />}
-                    {notification.message}
-                </div>
-            )}
 
             {/* ── File Size Error Banner ── */}
             {uploadError && (
