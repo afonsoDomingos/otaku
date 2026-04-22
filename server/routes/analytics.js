@@ -36,7 +36,15 @@ router.post('/music/download', async (req, res) => {
 
 // Public ping for anonymous visitors
 router.post('/ping-visitor', async (req, res) => {
-// ... existing code ...
+    try {
+        const { country, ip } = req.body;
+        if (ip) {
+            await Visitor.findOneAndUpdate(
+                { ip },
+                { country: country || 'Desconhecido', lastActive: new Date(), userAgent: req.headers['user-agent'] },
+                { upsert: true, new: true }
+            );
+        }
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -55,7 +63,12 @@ router.get('/stats', protect, admin, async (req, res) => {
         const musicStats = await getMusicStats();
 
         // Country stats for users
-// ... existing code ...
+        const userCountries = await User.aggregate([
+            { $group: { _id: "$country", count: { $sum: 1 } } },
+            { $sort: { count: -1 } }
+        ]);
+
+        // Country stats for visitors
         const visitorCountries = await Visitor.aggregate([
             { $group: { _id: "$country", count: { $sum: 1 } } },
             { $sort: { count: -1 } }
