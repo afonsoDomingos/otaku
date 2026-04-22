@@ -603,6 +603,7 @@ const Home = () => {
                 }
                 .hero-content p { font-size: 1.25rem; line-height: 1.4; color: #f3f3f3; margin-bottom: 30px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; max-width: 600px; }
                 .hero-btns { display: flex; gap: 15px; flex-wrap: wrap; position: relative; z-index: 20; }
+
                 @media (max-width: 768px) {
                     .hero-btns {
                         margin-bottom: 20px;
@@ -718,7 +719,7 @@ const Home = () => {
                 }
 
                 @media (max-width: 768px) {
-                    .hero-carousel { height: 85vh; margin-bottom: 20px; }
+                    .hero-carousel { height: 85vh; margin-bottom: 50px; }
                     .hero-content { padding: 0 5%; padding-top: 42vh; }
                     .hero-content h1 { font-size: 2.2rem; text-align: left; margin-bottom: 10px; line-height: 1.1; }
                     .hero-content p { font-size: 0.9rem; text-align: left; -webkit-line-clamp: 3; line-height: 1.4; margin-bottom: 15px; }
