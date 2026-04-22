@@ -29,6 +29,12 @@ const AdminDashboard = () => {
     const [uploadTarget, setUploadTarget] = useState('');
     const [uploadFileName, setUploadFileName] = useState('');
     const [uploadError, setUploadError] = useState('');
+    const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
+
+    const showNotification = (message, type = 'success') => {
+        setNotification({ show: true, message, type });
+        setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 3000);
+    };
 
     const fetchData = async () => {
         try {
@@ -79,7 +85,8 @@ const AdminDashboard = () => {
         try {
             await API.delete(`/${type}s/${id}`);
             fetchData();
-        } catch (error) { alert("Erro ao deletar."); }
+            showNotification(`Removido com sucesso!`);
+        } catch (error) { showNotification("Erro ao deletar", "error"); }
     };
 
     const handleFileUpload = async (e, target) => {
@@ -151,7 +158,8 @@ const AdminDashboard = () => {
             setNewGuest({ name: '', photo: '', role: 'Convidado Especial', podcastUrl: '' });
             setEditingGuestId(null);
             fetchData();
-        } catch (error) { alert("Erro ao guardar convidado."); }
+            showNotification(editingGuestId ? "Convidado atualizado!" : "Convidado adicionado!");
+        } catch (error) { showNotification("Erro ao guardar convidado", "error"); }
     };
 
     const handleEditGuestClick = (guest) => {
@@ -161,6 +169,12 @@ const AdminDashboard = () => {
 
     return (
         <div className="admin-page container" style={{paddingTop: '100px'}}>
+            {notification.show && (
+                <div className={`notification-toast ${notification.type}`}>
+                    {notification.type === 'success' ? <Check size={18} /> : <X size={18} />}
+                    {notification.message}
+                </div>
+            )}
 
             {/* ── File Size Error Banner ── */}
             {uploadError && (
@@ -322,13 +336,16 @@ const AdminDashboard = () => {
 
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <button className="auth-btn" onClick={async () => { 
-                                    if (newAnime._id) {
-                                        await API.put(`/animes/${newAnime._id}`, newAnime);
-                                    } else {
-                                        await API.post('/animes', newAnime); 
-                                    }
-                                    setNewAnime({ title: '', category: '', description: '', thumbnail: '', seasons: [{ title: 'Temporada 1', price: 100, episodes: [{ title: 'Episódio 1', videoUrl: '' }] }] });
-                                    fetchData(); 
+                                    try {
+                                        if (newAnime._id) {
+                                            await API.put(`/animes/${newAnime._id}`, newAnime);
+                                        } else {
+                                            await API.post('/animes', newAnime); 
+                                        }
+                                        setNewAnime({ title: '', category: '', description: '', thumbnail: '', seasons: [{ title: 'Temporada 1', price: 100, episodes: [{ title: 'Episódio 1', videoUrl: '' }] }] });
+                                        fetchData(); 
+                                        showNotification("Anime guardado com sucesso!");
+                                    } catch (e) { showNotification("Erro ao guardar anime", "error"); }
                                 }}>Salvar Anime Completo</button>
                                 {newAnime._id && (
                                     <button className="auth-btn" style={{ background: '#555' }} onClick={() => setNewAnime({ title: '', category: '', description: '', thumbnail: '', seasons: [{ title: 'Temporada 1', price: 100, episodes: [{ title: 'Episódio 1', videoUrl: '' }] }] })}>Cancelar</button>
@@ -420,13 +437,16 @@ const AdminDashboard = () => {
 
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <button className="auth-btn" onClick={async () => { 
-                                    if (newManga._id) {
-                                        await API.put(`/mangas/${newManga._id}`, newManga);
-                                    } else {
-                                        await API.post('/mangas', newManga); 
-                                    }
-                                    setNewManga({ title: '', description: '', thumbnail: '', author: '', genre: '', price: 0, chapters: [] });
-                                    fetchData(); 
+                                    try {
+                                        if (newManga._id) {
+                                            await API.put(`/mangas/${newManga._id}`, newManga);
+                                        } else {
+                                            await API.post('/mangas', newManga); 
+                                        }
+                                        setNewManga({ title: '', description: '', thumbnail: '', author: '', genre: '', price: 0, chapters: [] });
+                                        fetchData(); 
+                                        showNotification("Mangá guardado com sucesso!");
+                                    } catch (error) { showNotification("Erro ao guardar mangá", "error"); }
                                 }}>Salvar Mangá Completo</button>
                                 {newManga._id && (
                                     <button className="auth-btn" style={{ background: '#555' }} onClick={() => setNewManga({ title: '', description: '', thumbnail: '', author: '', genre: '', price: 0, chapters: [] })}>Cancelar</button>
@@ -461,13 +481,16 @@ const AdminDashboard = () => {
                             <input type="file" hidden onChange={e => handleFileUpload(e, 'short')} accept="video/*" disabled={uploading} />
                         </label>
                         <button className="auth-btn" style={{ width: 'auto', margin: 0 }} onClick={async () => { 
-                            let yId = '';
-                            if (newShort.url.includes('youtube.com') || newShort.url.includes('youtu.be')) {
-                                yId = newShort.url.includes('shorts/') ? newShort.url.split('shorts/')[1].split('?')[0] : newShort.url.split('v=')[1]?.split('&')[0];
-                            }
-                            await API.post('/shorts', { title: 'New Short', url: newShort.url, youtubeId: yId });
-                            setNewShort({ title: '', url: '' });
-                            fetchData();
+                            try {
+                                let yId = '';
+                                if (newShort.url.includes('youtube.com') || newShort.url.includes('youtu.be')) {
+                                    yId = newShort.url.includes('shorts/') ? newShort.url.split('shorts/')[1].split('?')[0] : newShort.url.split('v=')[1]?.split('&')[0];
+                                }
+                                await API.post('/shorts', { title: 'New Short', url: newShort.url, youtubeId: yId });
+                                setNewShort({ title: '', url: '' });
+                                fetchData();
+                                showNotification("Short adicionado!");
+                            } catch (e) { showNotification("Erro ao adicionar short", "error"); }
                         }}>Adicionar</button>
                     </div>
                     <div className="admin-anime-grid">
@@ -678,6 +701,7 @@ const AdminDashboard = () => {
                 .purchases-table { background: var(--surface); border-radius: 8px; overflow-x: auto; }
                 table { width: 100%; border-collapse: collapse; min-width: 600px; }
                 th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; font-size: 0.9rem; }
+                .badge { background: #E50914; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; margin-left: 5px; }
                 .status-tag { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; margin-left: 10px; }
                 .status-tag.approved { background: #2e7d32; }
                 .status-tag.pending { background: #555; }
@@ -686,6 +710,30 @@ const AdminDashboard = () => {
                 .admin-anime-card img { width: 100%; height: 180px; object-fit: cover; }
                 .card-controls { padding: 8px; display: flex; justify-content: space-between; align-items: center; }
                 .card-controls h4 { font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+                
+                .notification-toast {
+                    position: fixed;
+                    top: 90px;
+                    right: 40px;
+                    padding: 15px 25px;
+                    background: #181818;
+                    color: white;
+                    border-radius: 8px;
+                    border-left: 4px solid #4ade80;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    z-index: 10000;
+                    animation: slideIn 0.3s ease-out;
+                }
+                .notification-toast.error { border-left-color: #ff4444; }
+                
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                
                 @keyframes shimmer {
                     0% { background-position: 200% 0; }
                     100% { background-position: -200% 0; }

@@ -13,6 +13,12 @@ const Profile = () => {
     const [profilePic, setProfilePic] = useState(null);
     const [preview, setPreview] = useState(user?.profilePic || '');
     const [loading, setLoading] = useState(false);
+    const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
+
+    const showNotification = (message, type = 'success') => {
+        setNotification({ show: true, message, type });
+        setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 3000);
+    };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -37,9 +43,9 @@ const Profile = () => {
             });
             setUser(data);
             localStorage.setItem('user', JSON.stringify(data));
-            alert("Perfil atualizado com sucesso!");
+            showNotification("Perfil atualizado com sucesso!");
         } catch (error) {
-            alert(error.response?.data?.message || "Erro ao atualizar perfil");
+            showNotification(error.response?.data?.message || "Erro ao atualizar perfil", "error");
         } finally {
             setLoading(false);
         }
@@ -47,6 +53,11 @@ const Profile = () => {
 
     return (
         <div className="profile-page container">
+            {notification.show && (
+                <div className={`notification-toast ${notification.type}`}>
+                    {notification.message}
+                </div>
+            )}
             <button onClick={() => navigate(-1)} className="back-btn">
                 <ArrowLeft size={20} /> Voltar
             </button>
@@ -110,6 +121,26 @@ const Profile = () => {
                 .save-btn { margin-top: 10px; padding: 15px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; }
                 .save-btn:hover:not(:disabled) { background: #ff1f1f; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(229, 9, 20, 0.3); }
                 .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+                .notification-toast {
+                    position: fixed;
+                    top: 90px;
+                    right: 40px;
+                    padding: 15px 25px;
+                    background: #181818;
+                    color: white;
+                    border-radius: 8px;
+                    border-left: 4px solid #4ade80;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                    z-index: 10000;
+                    animation: slideIn 0.3s ease-out;
+                }
+                .notification-toast.error { border-left-color: #ff4444; }
+                
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
             `}</style>
         </div>
     );
