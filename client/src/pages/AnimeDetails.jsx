@@ -35,6 +35,14 @@ const AnimeDetails = () => {
 
     const handlePurchaseClick = (season) => {
         if (!user) return navigate('/login');
+        
+        // Check if season has real episodes (ignoring the default empty one if necessary)
+        const hasEpisodes = season.episodes && season.episodes.length > 0 && season.episodes.some(ep => ep.videoUrl && ep.videoUrl.trim() !== "");
+        
+        if (!hasEpisodes) {
+            return alert("🌸 Opa! Esta temporada ainda está em processamento e não tem episódios disponíveis no momento. Por favor, aguarda pela disponibilidade. Agradecemos a tua paciência e paixão Otaku! ✨");
+        }
+
         setSelectedSeason(season);
         setShowModal(true);
     };

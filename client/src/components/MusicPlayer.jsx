@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Music, Pause, Play, Volume2 } from 'lucide-react';
+import { Music, Pause, Play, Volume2, Download } from 'lucide-react';
 
 const MusicPlayer = () => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -36,11 +36,41 @@ const MusicPlayer = () => {
                 </div>
                 <span className="music-label">{isPlaying ? 'Tocando' : 'Trilha'}</span>
             </div>
+            
+            <a 
+                href="/Lil Matimbe feat Vibe - otaku.mp3.mpeg" 
+                download="OtakuZone - Trilha Sonora.mp3"
+                className="music-download-btn"
+                title="Baixar Trilha"
+            >
+                <Download size={14} />
+            </a>
 
             <style>{`
                 .music-nav-item {
                     display: flex;
                     align-items: center;
+                    gap: 8px;
+                }
+
+                .music-download-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 50%;
+                    background: rgba(255,255,255,0.05);
+                    color: #888;
+                    transition: all 0.3s;
+                    border: 1px solid rgba(255,255,255,0.1);
+                }
+
+                .music-download-btn:hover {
+                    background: var(--primary);
+                    color: white;
+                    border-color: var(--primary);
+                    transform: scale(1.1);
                 }
 
                 .music-btn {
