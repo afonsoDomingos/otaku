@@ -15,6 +15,7 @@ import MangaReader from './pages/MangaReader';
 import PodcastSchedule from './pages/PodcastSchedule';
 import { SearchProvider } from './context/SearchContext';
 import ScrollToTop from './components/ScrollToTop';
+import ActivityTracker from './components/ActivityTracker';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
     const { user, loading } = useAuth();
@@ -31,6 +32,7 @@ function App() {
         <Router>
           <Navbar />
           <ScrollToTop />
+          <ActivityTracker />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/mangas" element={<Mangas />} />

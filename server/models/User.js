@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     purchasedSeasons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Season' }],
+    lastActive: { type: Date, default: Date.now },
+    country: { type: String, default: 'Desconhecido' }
 }, { timestamps: true });
 
 userSchema.pre('save', async function() {

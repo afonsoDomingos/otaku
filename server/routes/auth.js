@@ -49,4 +49,32 @@ router.post('/login', async (req, res) => {
     }
 });
 
+const { protect, admin } = require('../middleware/auth');
+
+// Get all users (Admin only)
+router.get('/users', protect, admin, async (req, res) => {
+    try {
+        const users = await User.find({}).select('-password').sort('-lastActive');
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Update tracking (Ping)
+router.post('/ping', async (req, res) => {
+    try {
+        const { country, userId } = req.body;
+        if (userId) {
+            await User.findByIdAndUpdate(userId, { 
+                lastActive: new Date(),
+                country: country || 'Desconhecido'
+            });
+        }
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

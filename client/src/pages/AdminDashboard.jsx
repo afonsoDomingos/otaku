@@ -11,6 +11,8 @@ const AdminDashboard = () => {
     const [interviews, setInterviews] = useState([]);
     const [guests, setGuests] = useState([]);
     const [partners, setPartners] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [analytics, setAnalytics] = useState({ totalUsers: 0, onlineUsers: 0, onlineVisitors: 0, totalOnline: 0, userCountries: [], visitorCountries: [] });
     const [stats, setStats] = useState({ pending: 0, totalSales: 0, revenue: 0, approvedCount: 0 });
     
     const [newAnime, setNewAnime] = useState({ 
@@ -30,14 +32,16 @@ const AdminDashboard = () => {
 
     const fetchData = async () => {
         try {
-            const [pRes, aRes, mRes, sRes, iRes, gRes, prRes] = await Promise.all([
+            const [pRes, aRes, mRes, sRes, iRes, gRes, prRes, uRes, anRes] = await Promise.all([
                 API.get('/purchases/admin'),
                 API.get('/animes'),
                 API.get('/mangas'),
                 API.get('/shorts'),
                 API.get('/interviews/admin'),
                 API.get('/guests').catch(() => ({ data: [] })),
-                API.get('/partners/admin').catch(() => ({ data: [] }))
+                API.get('/partners/admin').catch(() => ({ data: [] })),
+                API.get('/auth/users').catch(() => ({ data: [] })),
+                API.get('/analytics/stats').catch(() => ({ data: { onlineUsers: 0, userCountries: [] } }))
             ]);
             const purchases = Array.isArray(pRes.data) ? pRes.data : [];
             const animeList = Array.isArray(aRes.data) ? aRes.data : [];
@@ -48,6 +52,8 @@ const AdminDashboard = () => {
             setInterviews(Array.isArray(iRes.data) ? iRes.data : []);
             setGuests(Array.isArray(gRes.data) ? gRes.data : []);
             setPartners(Array.isArray(prRes.data) ? prRes.data : []);
+            setUsers(Array.isArray(uRes.data) ? uRes.data : []);
+            setAnalytics(anRes.data || {});
             
             const approved = purchases.filter(p => p.status === 'approved');
             setStats({
@@ -203,9 +209,9 @@ const AdminDashboard = () => {
 
             <h1 style={{marginBottom: '30px'}}>Painel Admin</h1>
             <div className="admin-tabs">
-                {['purchases', 'catalog', 'mangas', 'shorts', 'podcast', 'convidados', 'parcerias'].map(tab => (
+                {['purchases', 'catalog', 'mangas', 'shorts', 'podcast', 'convidados', 'parcerias', 'users', 'analytics'].map(tab => (
                     <button key={tab} className={activeTab === tab ? 'active' : ''} onClick={() => setActiveTab(tab)}>
-                        {tab === 'purchases' ? 'Vendas' : tab === 'catalog' ? 'Animes' : tab === 'mangas' ? 'Mangás' : tab === 'shorts' ? 'Shorts' : tab === 'podcast' ? 'Podcast' : tab === 'convidados' ? 'Convidados' : 'Parcerias'}
+                        {tab === 'purchases' ? 'Vendas' : tab === 'catalog' ? 'Animes' : tab === 'mangas' ? 'Mangás' : tab === 'shorts' ? 'Shorts' : tab === 'podcast' ? 'Podcast' : tab === 'convidados' ? 'Convidados' : tab === 'users' ? 'Usuários' : tab === 'analytics' ? 'Analytics' : 'Parcerias'}
                     </button>
                 ))}
             </div>
@@ -581,6 +587,86 @@ const AdminDashboard = () => {
                             )}
                         </tbody>
                     </table>
+                </div>
+            )}
+
+            {activeTab === 'users' && (
+                <div className="purchases-table">
+                    <h2 style={{padding: '15px 20px', margin: 0, borderBottom: '1px solid #333'}}>Gestão de Usuários</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>País</th>
+                                <th>Visto por último</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {users.map(u => (
+                                <tr key={u._id}>
+                                    <td>{u.name} {u.role === 'admin' && <span className="badge" style={{fontSize: '0.6rem'}}>ADMIN</span>}</td>
+                                    <td>{u.email}</td>
+                                    <td>{u.country || 'Desconhecido'}</td>
+                                    <td>{new Date(u.lastActive).toLocaleString()}</td>
+                                    <td>
+                                        <button onClick={() => handleDelete('user', u._id)} style={{color: '#ff4444', background: 'none', border: 'none', cursor: 'pointer'}}>
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {activeTab === 'analytics' && (
+                <div className="analytics-manager">
+                    <div className="stats-grid" style={{gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px'}}>
+                        <div className="stat-card" style={{background: 'var(--surface)', padding: '25px', borderRadius: '12px', textAlign: 'center'}}>
+                            <h4 style={{color: '#888', marginBottom: '10px'}}>Total de Usuários</h4>
+                            <p style={{fontSize: '2rem', fontWeight: 900}}>{analytics.totalUsers || 0}</p>
+                        </div>
+                        <div className="stat-card" style={{background: 'var(--surface)', padding: '25px', borderRadius: '12px', textAlign: 'center', border: '1px solid #4ade80'}}>
+                            <h4 style={{color: '#4ade80', marginBottom: '10px'}}>Online Agora</h4>
+                            <p style={{fontSize: '2rem', fontWeight: 900}}>{analytics.totalOnline || 0}</p>
+                            <span style={{fontSize: '0.8rem', color: '#888'}}>({analytics.onlineUsers} usuários, {analytics.onlineVisitors} visitantes)</span>
+                        </div>
+                    </div>
+
+                    <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px'}}>
+                        <div style={{background: 'var(--surface)', padding: '25px', borderRadius: '12px'}}>
+                            <h3 style={{marginBottom: '20px', fontSize: '1.2rem'}}>Visitantes por País</h3>
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
+                                {(analytics.visitorCountries || []).map(c => (
+                                    <div key={c._id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                        <span>{c._id}</span>
+                                        <div style={{display: 'flex', alignItems: 'center', gap: '10px', flex: 1, margin: '0 20px'}}>
+                                            <div style={{height: '8px', background: 'var(--primary)', width: `${(c.count / analytics.onlineVisitors) * 100}%`, borderRadius: '4px'}} />
+                                        </div>
+                                        <span style={{fontWeight: 'bold'}}>{c.count}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div style={{background: 'var(--surface)', padding: '25px', borderRadius: '12px'}}>
+                            <h3 style={{marginBottom: '20px', fontSize: '1.2rem'}}>Usuários por País</h3>
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
+                                {(analytics.userCountries || []).map(c => (
+                                    <div key={c._id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                        <span>{c._id}</span>
+                                        <div style={{display: 'flex', alignItems: 'center', gap: '10px', flex: 1, margin: '0 20px'}}>
+                                            <div style={{height: '8px', background: '#3b82f6', width: `${(c.count / analytics.totalUsers) * 100}%`, borderRadius: '4px'}} />
+                                        </div>
+                                        <span style={{fontWeight: 'bold'}}>{c.count}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
 
