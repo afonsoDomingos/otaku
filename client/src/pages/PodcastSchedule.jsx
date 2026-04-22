@@ -23,7 +23,7 @@ const PodcastSchedule = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.proof) return alert("Por favor, anexe o comprovativo de 250 MT.");
+        if (!formData.proof) return alert("Por favor, anexe o comprovativo de 300 MT.");
 
         setLoading(true);
         const data = new FormData();
@@ -92,7 +92,7 @@ const PodcastSchedule = () => {
                             <Info color="#E50914" />
                             <div>
                                 <strong>Contribuição Logística</strong>
-                                <p>Valor fixo de 250 MT para suporte técnico e produção.</p>
+                                <p>Valor fixo de 300 MT para suporte técnico e produção.</p>
                             </div>
                         </div>
                     </div>
@@ -136,7 +136,7 @@ const PodcastSchedule = () => {
                             />
                         </div>
                         <div className="upload-block">
-                            <label>Comprovativo (250 MT)</label>
+                            <label>Comprovativo (300 MT)</label>
                             <div className="file-input">
                                 <label htmlFor="proof"><Upload size={18} /> {formData.proof ? formData.proof.name : "Selecionar Comprovativo"}</label>
                                 <input type="file" id="proof" onChange={e => setFormData({...formData, proof: e.target.files[0]})} hidden required />

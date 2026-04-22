@@ -107,7 +107,15 @@ const AdminDashboard = () => {
             });
             if (target === 'anime') setNewAnime(prev => ({...prev, thumbnail: data.url}));
             else if (target === 'manga') setNewManga(prev => ({...prev, thumbnail: data.url}));
-            else {
+            else if (target === 'short') setNewShort(prev => ({...prev, url: data.url}));
+            else if (target === 'guest') setNewGuest(prev => ({...prev, photo: data.url}));
+            else if (target.mIdx !== undefined) {
+                setNewManga(prev => {
+                    const updated = [...prev.chapters];
+                    updated[target.mIdx].pages[target.pIdx] = data.url;
+                    return {...prev, chapters: updated};
+                });
+            } else if (target.sIdx !== undefined) {
                 setNewAnime(prev => {
                     const updated = [...prev.seasons];
                     updated[target.sIdx].episodes[target.eIdx].videoUrl = data.url;
@@ -387,12 +395,16 @@ const AdminDashboard = () => {
 
                                         <h4 style={{ fontSize: '0.9rem', color: '#aaa', marginBottom: '10px' }}>Páginas (URLs)</h4>
                                         {c.pages?.map((pg, pIdx) => (
-                                            <div key={pIdx} style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
+                                            <div key={pIdx} style={{ display: 'flex', gap: '10px', marginBottom: '8px', alignItems: 'center' }}>
                                                 <input type="text" placeholder="URL da Página / Imagem" value={pg} onChange={e => { const updated = [...newManga.chapters]; updated[cIdx].pages[pIdx] = e.target.value; setNewManga({...newManga, chapters: updated})}} />
+                                                <label style={{ cursor: uploading ? 'wait' : 'pointer', background: '#444', padding: '10px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
+                                                    <Upload size={16} />
+                                                    <input type="file" hidden onChange={e => handleFileUpload(e, {mIdx: cIdx, pIdx: pIdx})} accept="image/*" disabled={uploading} />
+                                                </label>
                                                 <button onClick={() => { const updated = [...newManga.chapters]; updated[cIdx].pages.splice(pIdx,1); setNewManga({...newManga, chapters: updated})}} style={{ background: 'transparent' }}><X size={18} color="#aaa" /></button>
                                             </div>
                                         ))}
-                                        <button className="auth-btn" style={{ margin: '10px 0 0', padding: '8px 15px', background: '#444', width: 'auto', fontSize: '0.9rem' }} onClick={() => { const updated = [...newManga.chapters]; updated[cIdx].pages.push(''); setNewManga({...newManga, chapters: updated}) }}>+ Adicionar Página (URL)</button>
+                                        <button className="auth-btn" style={{ margin: '10px 0 0', padding: '8px 15px', background: '#444', width: 'auto', fontSize: '0.9rem' }} onClick={() => { const updated = [...newManga.chapters]; updated[cIdx].pages.push(''); setNewManga({...newManga, chapters: updated}) }}>+ Adicionar Página</button>
                                     </div>
                                 ))}
                                 <button className="auth-btn" style={{ margin: '0', padding: '10px', background: '#2e7d32', width: '100%', fontSize: '0.95rem' }} onClick={() => setNewManga({...newManga, chapters: [...(newManga.chapters||[]), { number: (newManga.chapters?.length||0)+1, title: '', pages: [] }]})}>+ Novo Capítulo</button>
@@ -436,11 +448,19 @@ const AdminDashboard = () => {
 
             {activeTab === 'shorts' && (
                 <div className="shorts-manager">
-                    <div className="add-anime-form">
-                        <input type="text" placeholder="URL Shorts" value={newShort.url} onChange={e => setNewShort({...newShort, url: e.target.value})} />
-                        <button className="auth-btn" onClick={async () => { 
-                            const yId = newShort.url.includes('shorts/') ? newShort.url.split('shorts/')[1].split('?')[0] : newShort.url.split('v=')[1]?.split('&')[0];
+                    <div className="add-anime-form" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <input type="text" placeholder="URL Shorts (YouTube ou direto)" value={newShort.url} onChange={e => setNewShort({...newShort, url: e.target.value})} />
+                        <label style={{ cursor: uploading ? 'wait' : 'pointer', background: '#333', padding: '12px', borderRadius: '4px', border: '1px dashed #555', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Upload size={18} /> {uploading && uploadTarget==='short' ? '...' : 'Upload'}
+                            <input type="file" hidden onChange={e => handleFileUpload(e, 'short')} accept="video/*" disabled={uploading} />
+                        </label>
+                        <button className="auth-btn" style={{ width: 'auto', margin: 0 }} onClick={async () => { 
+                            let yId = '';
+                            if (newShort.url.includes('youtube.com') || newShort.url.includes('youtu.be')) {
+                                yId = newShort.url.includes('shorts/') ? newShort.url.split('shorts/')[1].split('?')[0] : newShort.url.split('v=')[1]?.split('&')[0];
+                            }
                             await API.post('/shorts', { title: 'New Short', url: newShort.url, youtubeId: yId });
+                            setNewShort({ title: '', url: '' });
                             fetchData();
                         }}>Adicionar</button>
                     </div>
@@ -479,7 +499,13 @@ const AdminDashboard = () => {
                         <h2>{editingGuestId ? 'Editar Convidado' : 'Adicionar Convidado'}</h2>
                         <form onSubmit={handleAddGuest} style={{background: 'var(--surface)', padding: '20px', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '15px'}}>
                             <input placeholder="Nome (Ex: Meu Mano Denzel)" value={newGuest.name} onChange={e => setNewGuest({...newGuest, name: e.target.value})} required style={{padding: '10px', background: '#111', border: '1px solid #333', color: 'white', borderRadius: '4px'}} />
-                            <input placeholder="URL da Foto (opcional)" value={newGuest.photo} onChange={e => setNewGuest({...newGuest, photo: e.target.value})} style={{padding: '10px', background: '#111', border: '1px solid #333', color: 'white', borderRadius: '4px'}} />
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                <input placeholder="URL da Foto (opcional)" value={newGuest.photo} onChange={e => setNewGuest({...newGuest, photo: e.target.value})} style={{ flex: 1, padding: '10px', background: '#111', border: '1px solid #333', color: 'white', borderRadius: '4px' }} />
+                                <label style={{ cursor: uploading ? 'wait' : 'pointer', background: '#333', padding: '10px', borderRadius: '4px', border: '1px dashed #555' }}>
+                                    <Upload size={16} />
+                                    <input type="file" hidden onChange={e => handleFileUpload(e, 'guest')} accept="image/*" disabled={uploading} />
+                                </label>
+                            </div>
                             <input placeholder="Papel (Ex: Convidado Especial)" value={newGuest.role} onChange={e => setNewGuest({...newGuest, role: e.target.value})} style={{padding: '10px', background: '#111', border: '1px solid #333', color: 'white', borderRadius: '4px'}} />
                             <div style={{display: 'flex', gap: '10px'}}>
                                 <button type="submit" style={{flex: 1, padding: '12px', background: 'var(--primary)', color: 'white', borderRadius: '4px', fontWeight: 'bold'}}>

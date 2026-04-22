@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import API from '../api';
-import { Play, Info, Flame, X } from 'lucide-react';
+import { Play, Info, Flame, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import { useSearch } from '../context/SearchContext';
@@ -70,6 +70,17 @@ const Home = () => {
         return () => clearInterval(interval);
     }, [featuredAnimes]);
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (!selectedShort) return;
+            if (e.key === 'ArrowRight') handleNextShort();
+            if (e.key === 'ArrowLeft') handlePrevShort();
+            if (e.key === 'Escape') setSelectedShort(null);
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [selectedShort, shorts]);
+
     const filteredAnimes = animes.filter(anime => 
         (anime.title || "").toLowerCase().includes((searchQuery || "").trim().toLowerCase()) ||
         (anime.category || "").toLowerCase().includes((searchQuery || "").trim().toLowerCase())
@@ -106,6 +117,20 @@ const Home = () => {
         } catch (error) {
             setReviewStatus('erro');
         }
+    };
+
+    const handleNextShort = () => {
+        if (!selectedShort || shorts.length <= 1) return;
+        const currentIndex = shorts.findIndex(s => s._id === selectedShort._id);
+        const nextIndex = (currentIndex + 1) % shorts.length;
+        setSelectedShort(shorts[nextIndex]);
+    };
+
+    const handlePrevShort = () => {
+        if (!selectedShort || shorts.length <= 1) return;
+        const currentIndex = shorts.findIndex(s => s._id === selectedShort._id);
+        const prevIndex = (currentIndex - 1 + shorts.length) % shorts.length;
+        setSelectedShort(shorts[prevIndex]);
     };
 
     if (loading) return (
@@ -232,18 +257,35 @@ const Home = () => {
                         {selectedShort && (
                             <div className="short-modal-overlay" onClick={() => setSelectedShort(null)}>
                                 <div className="short-modal-content" onClick={e => e.stopPropagation()}>
-                                    <button className="close-short" onClick={() => setSelectedShort(null)}><X size={30} /></button>
+                                    <button className="close-btn" style={{ position: 'absolute', top: '-40px', right: '0', background: 'none', border: 'none', color: 'white', cursor: 'pointer' }} onClick={() => setSelectedShort(null)}>
+                                        <X size={32} />
+                                    </button>
+                                    
+                                    <button className="nav-btn prev" onClick={(e) => { e.stopPropagation(); handlePrevShort(); }}>
+                                        <ChevronLeft size={32} />
+                                    </button>
+
                                     <div className="short-video-container">
                                         <iframe 
-                                            src={`https://www.youtube.com/embed/${selectedShort.youtubeId}?autoplay=1`}
+                                            src={selectedShort.url.includes('youtube.com') || selectedShort.youtubeId 
+                                                ? `https://www.youtube.com/embed/${selectedShort.youtubeId}?autoplay=1&rel=0&modestbranding=1` 
+                                                : selectedShort.url}
                                             title={selectedShort.title}
                                             frameBorder="0"
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                             allowFullScreen
                                         ></iframe>
                                     </div>
+
+                                    <button className="nav-btn next" onClick={(e) => { e.stopPropagation(); handleNextShort(); }}>
+                                        <ChevronRight size={32} />
+                                    </button>
+
                                     <div className="short-modal-info">
-                                        <h2>{selectedShort.title}</h2>
+                                        <h3>{selectedShort.title}</h3>
+                                        <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', marginTop: '5px' }}>
+                                            Pressione as setas ← → para navegar
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -575,12 +617,28 @@ const Home = () => {
                 .short-card h3 { font-weight: 700; font-size: 0.9rem; color: #fff; margin-top: 10px; }
 
                 /* Short Player Modal */
-                .short-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-                .short-modal-content { position: relative; height: 85vh; max-height: 800px; aspect-ratio: 9/16; margin: 0 auto; animation: modal-reveal 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-                @keyframes modal-reveal { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+                .short-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+                .short-modal-content { position: relative; height: 80vh; max-height: 700px; aspect-ratio: 9/16; display: flex; align-items: center; justify-content: center; animation: modal-reveal 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                @keyframes modal-reveal { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
                 
-                .short-video-container { width: 100%; height: 100%; background: #000; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 100px rgba(0,0,0,1); }
+                .short-video-container { width: 100%; height: 100%; background: #000; border-radius: 16px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 0 50px rgba(0,0,0,0.5); position: relative; z-index: 5; }
                 .short-video-container iframe { width: 100%; height: 100%; }
+
+                .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: none; color: white; width: 60px; height: 60px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; z-index: 10; backdrop-filter: blur(5px); }
+                .nav-btn:hover { background: var(--primary); transform: translateY(-50%) scale(1.1); }
+                .nav-btn.prev { left: -80px; }
+                .nav-btn.next { right: -80px; }
+
+                .short-modal-info { position: absolute; bottom: 20px; left: 20px; right: 20px; z-index: 10; text-shadow: 0 2px 10px rgba(0,0,0,0.8); pointer-events: none; }
+                .short-modal-info h3 { font-size: 1.2rem; font-weight: 700; color: #fff; }
+
+                @media (max-width: 968px) {
+                    .short-modal-content { height: 70vh; width: 90%; aspect-ratio: auto; }
+                    .nav-btn { width: 45px; height: 45px; }
+                    .nav-btn.prev { left: 10px; background: rgba(0,0,0,0.5); }
+                    .nav-btn.next { right: 10px; background: rgba(0,0,0,0.5); }
+                    .short-modal-content .close-btn { top: -50px; right: 0; }
+                }
 
                 @media (max-width: 768px) {
                     .hero-carousel { height: 85vh; margin-bottom: -40px; }
