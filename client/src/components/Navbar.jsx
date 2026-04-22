@@ -60,10 +60,13 @@ const Navbar = () => {
                 <Bell className="nav-icon" />
                 {user ? (
                     <div className="user-menu">
-                        <User className="nav-icon" />
+                        <div className="nav-avatar-wrapper">
+                            <img src={user.profilePic || 'https://via.placeholder.com/150'} alt="Profile" className="nav-avatar" />
+                        </div>
                         <div className="dropdown">
                             <p>{user.name}</p>
-                            <button onClick={logout}><LogOut size={16} /> Sair</button>
+                            <Link to="/profile" style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.8rem', padding: '5px 0' }}><User size={16} /> Perfil</Link>
+                            <button onClick={logout} style={{ marginTop: '5px' }}><LogOut size={16} /> Sair</button>
                         </div>
                     </div>
                 ) : (
@@ -164,6 +167,23 @@ const Navbar = () => {
                     cursor: pointer;
                     width: 20px;
                     color: white;
+                }
+                .nav-avatar-wrapper {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    overflow: hidden;
+                    border: 2px solid transparent;
+                    transition: border-color 0.3s;
+                    cursor: pointer;
+                }
+                .user-menu:hover .nav-avatar-wrapper {
+                    border-color: var(--primary);
+                }
+                .nav-avatar {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
                 }
                 .user-menu {
                     position: relative;

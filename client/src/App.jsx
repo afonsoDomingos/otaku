@@ -13,6 +13,7 @@ import Mangas from './pages/Mangas';
 import MangaDetails from './pages/MangaDetails';
 import MangaReader from './pages/MangaReader';
 import PodcastSchedule from './pages/PodcastSchedule';
+import Profile from './pages/Profile';
 import { SearchProvider } from './context/SearchContext';
 import ScrollToTop from './components/ScrollToTop';
 import ActivityTracker from './components/ActivityTracker';
@@ -43,6 +44,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/anime/:id" element={<AnimeDetails />} />
             <Route path="/my-purchases" element={<ProtectedRoute><MyPurchases /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/player/:animeId/:seasonIndex/:episodeIndex" element={<ProtectedRoute><Player /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
           </Routes>
