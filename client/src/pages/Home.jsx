@@ -351,9 +351,55 @@ const Home = () => {
                     box-shadow: 0 30px 60px rgba(229, 9, 20, 0.4);
                     border-color: rgba(229, 9, 20, 0.6);
                 }
-                .about-text h2 { font-size: 2.5rem; margin: 20px 0; font-weight: 800; text-shadow: 0 0 10px rgba(229, 9, 20, 0.2); }
-                .about-text p { font-size: 1.1rem; color: #aaa; line-height: 1.8; margin-bottom: 20px; }
-                .badge { background: #E50914; color: white; padding: 5px 12px; font-weight: bold; border-radius: 4px; font-size: 0.85rem; width: fit-content; }
+                .about-text h2 { 
+                    font-size: 2.5rem; margin: 20px 0; font-weight: 900; 
+                    background: linear-gradient(90deg, #fff, #ffb3b3, #E50914, #fff);
+                    background-size: 200% auto;
+                    color: transparent;
+                    -webkit-background-clip: text;
+                    animation: text-shine 4s linear infinite;
+                    text-shadow: 0 0 20px rgba(229, 9, 20, 0.2);
+                }
+                @keyframes text-shine {
+                    to { background-position: 200% center; }
+                }
+                .about-text p { 
+                    font-size: 1.1rem; color: #aaa; line-height: 1.8; margin-bottom: 20px; 
+                    transition: all 0.3s ease;
+                    border-left: 2px solid transparent;
+                    padding-left: 0;
+                }
+                .about-text p:hover {
+                    color: #fff;
+                    padding-left: 14px;
+                    border-left: 2px solid #E50914;
+                    text-shadow: 0 0 10px rgba(255,255,255,0.4);
+                }
+                .social-cta {
+                    display: inline-block;
+                    padding: 12px 24px;
+                    background: rgba(229, 9, 20, 0.1);
+                    border: 1px solid var(--primary);
+                    border-radius: 6px;
+                    color: #fff;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    box-shadow: 0 0 15px rgba(229, 9, 20, 0.2);
+                    margin-top: 10px;
+                }
+                .social-cta:hover {
+                    background: var(--primary);
+                    box-shadow: 0 0 25px rgba(229, 9, 20, 0.6);
+                    transform: translateY(-4px);
+                }
+                .social-cta p {
+                    margin: 0; color: #fff; border: none; padding: 0; transition: none;
+                }
+                .social-cta:hover p {
+                    padding: 0; border: none; text-shadow: 0 0 5px #fff;
+                }
+                .badge { background: #E50914; color: white; padding: 5px 12px; font-weight: bold; border-radius: 4px; font-size: 0.85rem; width: fit-content; text-transform: uppercase; box-shadow: 0 0 10px rgba(229, 9, 20, 0.4); }
             `}</style>
         </div>
     );
