@@ -718,17 +718,17 @@ const Home = () => {
                 }
 
                 @media (max-width: 768px) {
-                    .hero-carousel { height: 85vh; margin-bottom: -40px; }
-                    .hero-content { padding: 0 5%; padding-top: 50vh; }
-                    .hero-content h1 { font-size: 2.2rem; text-align: left; margin-bottom: 10px; }
-                    .hero-content p { font-size: 0.95rem; text-align: left; -webkit-line-clamp: 4; line-height: 1.4; margin-bottom: 20px; }
-                    .featured-badge { padding: 4px 10px; font-size: 0.75rem; border-left-width: 2px; }
-                    .hero-btns { flex-direction: column; width: 100%; align-items: stretch; margin-top: 0px; gap: 10px; }
-                    .hero-btns button { width: 100%; justify-content: center; padding: 12px; font-size: 1rem; border-radius: 4px; }
+                    .hero-carousel { height: 90vh; margin-bottom: 0px; }
+                    .hero-content { padding: 0 5%; padding-top: 45vh; }
+                    .hero-content h1 { font-size: 2rem; text-align: left; margin-bottom: 8px; line-height: 1.1; }
+                    .hero-content p { font-size: 0.9rem; text-align: left; -webkit-line-clamp: 3; line-height: 1.3; margin-bottom: 15px; }
+                    .featured-badge { padding: 3px 8px; font-size: 0.7rem; border-left-width: 2px; margin-bottom: 10px; }
+                    .hero-btns { flex-direction: column; width: 100%; align-items: stretch; margin-top: 5px; gap: 8px; }
+                    .hero-btns button { width: 100%; justify-content: center; padding: 10px; font-size: 0.95rem; border-radius: 4px; }
                     
-                    .main-content { margin-top: 0; padding-top: 20px; }
-                    .row-container { margin-bottom: 30px; }
-                    .row-title { font-size: 1.3rem; margin-bottom: 15px; }
+                    .main-content { margin-top: 20px; padding-top: 10px; }
+                    .row-container { margin-bottom: 25px; }
+                    .row-title { font-size: 1.2rem; margin-bottom: 12px; }
                     
                     /* Smaller Cards designed for horizontal swiping */
                     .anime-card { flex: 0 0 130px; border-radius: 6px; }
@@ -738,7 +738,7 @@ const Home = () => {
                     .short-card { flex: 0 0 110px; }
                     .short-card h3 { font-size: 0.8rem; }
                     
-                    .carousel-indicators { bottom: 60px; left: 5%; }
+                    .carousel-indicators { bottom: 40px; left: 5%; }
                     
                     .about-otaku-section { padding: 50px 0; }
                     .about-grid { grid-template-columns: 1fr !important; gap: 30px; text-align: center; }

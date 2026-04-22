@@ -281,17 +281,17 @@ const Navbar = () => {
                 }
                 .nav-login-btn { padding: 8px 20px; font-size: 0.9rem; }
                 @media (max-width: 768px) {
-                    .navbar { height: 60px; padding: 0 15px; }
-                    .logo { font-size: 1.2rem; margin-right: 10px; letter-spacing: -0.5px; }
-                    .nav-left { flex: 1; overflow: hidden; }
-                    .nav-links { gap: 12px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; padding-bottom: 5px; }
+                    .navbar { height: 50px; padding: 0 10px; }
+                    .logo { font-size: 1.1rem; margin-right: 5px; letter-spacing: -0.5px; }
+                    .nav-left { flex: 1; overflow: hidden; display: flex; align-items: center; }
+                    .nav-links { gap: 10px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; padding-bottom: 2px; }
                     .nav-links::-webkit-scrollbar { display: none; }
-                    .nav-links a { font-size: 0.85rem; padding: 5px 0; }
-                    .nav-right { gap: 12px; }
-                    .nav-icon { width: 18px; }
-                    .search-box input { width: 100%; font-size: 0.85rem; }
-                    .user-menu p { display: none; } /* Hide user name on very tiny screens */
-                    .nav-login-btn { padding: 6px 12px; font-size: 0.8rem; }
+                    .nav-links a { font-size: 0.8rem; padding: 3px 0; }
+                    .nav-right { gap: 8px; }
+                    .nav-icon { width: 16px; height: 16px; }
+                    .search-box input { width: 100%; font-size: 0.8rem; }
+                    .user-menu p { display: none; }
+                    .nav-login-btn { padding: 5px 10px; font-size: 0.75rem; }
                 }
             `}</style>
         </nav>

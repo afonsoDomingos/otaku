@@ -215,9 +215,10 @@ const MusicPlayer = () => {
                     50% { transform: scaleY(1); }
                 }
 
-                @media (max-width: 900px) {
+                @media (max-width: 768px) {
                     .music-label { display: none; }
-                    .music-nav-item { padding: 4px; background: none; border: none; }
+                    .music-nav-item { padding: 4px; background: none; border: none; gap: 5px; }
+                    .nav-visualizer { display: none; }
                 }
             `}</style>
         </div>
