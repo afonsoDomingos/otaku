@@ -718,15 +718,15 @@ const Home = () => {
                 }
 
                 @media (max-width: 768px) {
-                    .hero-carousel { height: 85vh; margin-bottom: -40px; }
-                    .hero-content { padding: 0 5%; padding-top: 50vh; }
-                    .hero-content h1 { font-size: 2.2rem; text-align: left; margin-bottom: 10px; }
-                    .hero-content p { font-size: 0.95rem; text-align: left; -webkit-line-clamp: 4; line-height: 1.4; margin-bottom: 20px; }
+                    .hero-carousel { height: 85vh; margin-bottom: 20px; }
+                    .hero-content { padding: 0 5%; padding-top: 42vh; }
+                    .hero-content h1 { font-size: 2.2rem; text-align: left; margin-bottom: 10px; line-height: 1.1; }
+                    .hero-content p { font-size: 0.9rem; text-align: left; -webkit-line-clamp: 3; line-height: 1.4; margin-bottom: 15px; }
                     .featured-badge { padding: 4px 10px; font-size: 0.75rem; border-left-width: 2px; }
-                    .hero-btns { flex-direction: column; width: 100%; align-items: stretch; margin-top: 0px; gap: 10px; }
+                    .hero-btns { flex-direction: column; width: 100%; align-items: stretch; margin-top: 5px; gap: 10px; }
                     .hero-btns button { width: 100%; justify-content: center; padding: 12px; font-size: 1rem; border-radius: 4px; }
                     
-                    .main-content { margin-top: 0; padding-top: 20px; }
+                    .main-content { margin-top: 0; padding-top: 10px; }
                     .row-container { margin-bottom: 30px; }
                     .row-title { font-size: 1.3rem; margin-bottom: 15px; }
                     
