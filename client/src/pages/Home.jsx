@@ -13,6 +13,7 @@ const Home = () => {
     const [categories, setCategories] = useState([]);
     const [featuredAnimes, setFeaturedAnimes] = useState([]);
     const [selectedShort, setSelectedShort] = useState(null);
+    const [guests, setGuests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeHero, setActiveHero] = useState(0);
 
@@ -22,10 +23,19 @@ const Home = () => {
                 API.get('/animes'),
                 API.get('/shorts')
             ]);
+            let gRes = { data: [] };
+            try { gRes = await API.get('/guests'); } catch (err) {}
+
             const animesData = Array.isArray(aRes.data) ? aRes.data : [];
             const shortsData = Array.isArray(sRes.data) ? sRes.data : [];
             setAnimes(animesData);
             setShorts(shortsData);
+            
+            const fetchedGuests = Array.isArray(gRes.data) && gRes.data.length > 0 ? gRes.data : [
+                { _id: '1', name: 'Meu Mano Denzel', photo: 'https://via.placeholder.com/150', role: 'Convidado Especial' },
+                { _id: '2', name: 'PURPPLESWAG', photo: 'https://via.placeholder.com/150', role: 'Convidado Especial' }
+            ];
+            setGuests(fetchedGuests);
             
             const cats = [...new Set(animesData.map(a => a.category).filter(Boolean))];
             setCategories(cats);
@@ -244,6 +254,26 @@ const Home = () => {
                             </div>
                         </section>
 
+                        {/* Podcast Guests Section */}
+                        <section className="guests-section container" style={{ padding: '80px 0' }}>
+                            <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+                                <h2 className="row-title" style={{ margin: '0 auto', display: 'inline-block' }}>Já passaram pelo nosso Podcast</h2>
+                                <p style={{ color: '#aaa', marginTop: '15px' }}>As lendas que já partilharam as suas histórias no Universo Otaku.</p>
+                            </div>
+                            <div className="guests-grid">
+                                {guests.map((guest) => (
+                                    <div key={guest._id} className="guest-card">
+                                        <div className="guest-avatar-wrapper">
+                                            <img src={guest.photo} alt={guest.name} className="guest-avatar" />
+                                            <div className="guest-glow"></div>
+                                        </div>
+                                        <h3 className="guest-name">{guest.name}</h3>
+                                        {guest.role && <p className="guest-role">{guest.role}</p>}
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
                         {/* Parceiros Section */}
                         <section className="partners-section container">
                             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -459,6 +489,18 @@ const Home = () => {
                 }
                 .partner-card p { color: #888; font-size: 0.95rem; transition: color 0.3s; font-weight: 500; }
                 .partner-card:hover p { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
+
+                /* Guests Section */
+                .guests-grid { display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; }
+                .guest-card { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 180px; }
+                .guest-avatar-wrapper { position: relative; margin-bottom: 20px; width: 140px; height: 140px; border-radius: 50%; padding: 4px; background: linear-gradient(45deg, #111, #333); transition: all 0.4s ease; cursor: pointer; }
+                .guest-card:hover .guest-avatar-wrapper { background: linear-gradient(45deg, var(--primary), #ffb3b3); transform: scale(1.05) translateY(-5px); }
+                .guest-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid #080808; position: relative; z-index: 2; }
+                .guest-glow { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 50%; box-shadow: 0 0 20px rgba(229, 9, 20, 0); transition: all 0.4s ease; z-index: 1; }
+                .guest-card:hover .guest-glow { box-shadow: 0 0 30px rgba(229, 9, 20, 0.6); }
+                .guest-name { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 5px; transition: color 0.3s; }
+                .guest-card:hover .guest-name { color: var(--primary); text-shadow: 0 0 10px rgba(229, 9, 20, 0.4); }
+                .guest-role { font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
             `}</style>
         </div>
     );

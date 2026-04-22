@@ -9,6 +9,7 @@ const AdminDashboard = () => {
     const [mangas, setMangas] = useState([]);
     const [shorts, setShorts] = useState([]);
     const [interviews, setInterviews] = useState([]);
+    const [guests, setGuests] = useState([]);
     const [stats, setStats] = useState({ pending: 0, totalSales: 0, revenue: 0, approvedCount: 0 });
     
     const [newAnime, setNewAnime] = useState({ 
@@ -17,6 +18,7 @@ const AdminDashboard = () => {
     });
     const [newManga, setNewManga] = useState({ title: '', description: '', thumbnail: '', author: '', genre: '', price: 0, chapters: [] });
     const [newShort, setNewShort] = useState({ title: '', url: '' });
+    const [newGuest, setNewGuest] = useState({ name: '', photo: '', role: 'Convidado Especial' });
     const [uploading, setUploading] = useState(false);
     const [processing, setProcessing] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -26,12 +28,13 @@ const AdminDashboard = () => {
 
     const fetchData = async () => {
         try {
-            const [pRes, aRes, mRes, sRes, iRes] = await Promise.all([
+            const [pRes, aRes, mRes, sRes, iRes, gRes] = await Promise.all([
                 API.get('/purchases/admin'),
                 API.get('/animes'),
                 API.get('/mangas'),
                 API.get('/shorts'),
-                API.get('/interviews/admin')
+                API.get('/interviews/admin'),
+                API.get('/guests').catch(() => ({ data: [] }))
             ]);
             const purchases = Array.isArray(pRes.data) ? pRes.data : [];
             const animeList = Array.isArray(aRes.data) ? aRes.data : [];
@@ -40,6 +43,7 @@ const AdminDashboard = () => {
             setMangas(Array.isArray(mRes.data) ? mRes.data : []);
             setShorts(Array.isArray(sRes.data) ? sRes.data : []);
             setInterviews(Array.isArray(iRes.data) ? iRes.data : []);
+            setGuests(Array.isArray(gRes.data) ? gRes.data : []);
             
             const approved = purchases.filter(p => p.status === 'approved');
             setStats({
@@ -118,6 +122,15 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleAddGuest = async (e) => {
+        e.preventDefault();
+        try {
+            await API.post('/guests', newGuest);
+            setNewGuest({ name: '', photo: '', role: 'Convidado Especial' });
+            fetchData();
+        } catch (error) { alert("Erro ao adicionar convidado."); }
+    };
+
     return (
         <div className="admin-page container" style={{paddingTop: '100px'}}>
 
@@ -168,9 +181,9 @@ const AdminDashboard = () => {
 
             <h1 style={{marginBottom: '30px'}}>Painel Admin</h1>
             <div className="admin-tabs">
-                {['purchases', 'catalog', 'mangas', 'shorts', 'podcast'].map(tab => (
+                {['purchases', 'catalog', 'mangas', 'shorts', 'podcast', 'convidados'].map(tab => (
                     <button key={tab} className={activeTab === tab ? 'active' : ''} onClick={() => setActiveTab(tab)}>
-                        {tab === 'purchases' ? 'Vendas' : tab === 'catalog' ? 'Animes' : tab === 'mangas' ? 'Mangás' : tab === 'shorts' ? 'Shorts' : 'Podcast'}
+                        {tab === 'purchases' ? 'Vendas' : tab === 'catalog' ? 'Animes' : tab === 'mangas' ? 'Mangás' : tab === 'shorts' ? 'Shorts' : tab === 'podcast' ? 'Podcast' : 'Convidados'}
                     </button>
                 ))}
             </div>
@@ -443,6 +456,35 @@ const AdminDashboard = () => {
                             ))}
                         </tbody>
                     </table>
+                </div>
+                </div>
+            )}
+
+            {activeTab === 'convidados' && (
+                <div style={{display: 'flex', gap: '30px'}}>
+                    <div style={{flex: 1}}>
+                        <h2>Adicionar Convidado</h2>
+                        <form onSubmit={handleAddGuest} style={{background: 'var(--surface)', padding: '20px', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '15px'}}>
+                            <input placeholder="Nome (Ex: Meu Mano Denzel)" value={newGuest.name} onChange={e => setNewGuest({...newGuest, name: e.target.value})} required style={{padding: '10px', background: '#111', border: '1px solid #333', color: 'white', borderRadius: '4px'}} />
+                            <input placeholder="URL da Foto (opcional)" value={newGuest.photo} onChange={e => setNewGuest({...newGuest, photo: e.target.value})} style={{padding: '10px', background: '#111', border: '1px solid #333', color: 'white', borderRadius: '4px'}} />
+                            <input placeholder="Papel (Ex: Convidado Especial)" value={newGuest.role} onChange={e => setNewGuest({...newGuest, role: e.target.value})} style={{padding: '10px', background: '#111', border: '1px solid #333', color: 'white', borderRadius: '4px'}} />
+                            <button type="submit" style={{padding: '12px', background: 'var(--primary)', color: 'white', borderRadius: '4px', fontWeight: 'bold'}}><Plus size={16} /> Adicionar</button>
+                        </form>
+                    </div>
+                    <div style={{flex: 2}}>
+                        <h2>Convidados Registados</h2>
+                        <div className="admin-anime-grid" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))'}}>
+                            {guests.map(g => (
+                                <div key={g._id} className="admin-anime-card" style={{textAlign: 'center', paddingBottom: '10px'}}>
+                                    <div style={{width: '100px', height: '100px', margin: '15px auto', borderRadius: '50%', overflow: 'hidden', border: '2px solid #e50914'}}>
+                                        <img src={g.photo || 'https://via.placeholder.com/150'} alt={g.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                                    </div>
+                                    <h4 style={{padding: '0 10px', fontSize: '0.9rem'}}>{g.name}</h4>
+                                    <button onClick={() => handleDelete('guest', g._id)} style={{background: 'transparent', color: '#ff4444', marginTop: '10px'}}><Trash2 size={16} /></button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             )}
 
