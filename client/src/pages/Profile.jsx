@@ -40,14 +40,13 @@ const Profile = () => {
         if (profilePic) formData.append('profilePic', profilePic);
 
         try {
-            const { data } = await API.put('/auth/profile', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            const { data } = await API.put('/auth/profile', formData);
             setUser(data);
             localStorage.setItem('user', JSON.stringify(data));
             showNotification("Perfil atualizado com sucesso!");
         } catch (error) {
-            showNotification(error.response?.data?.message || "Erro ao atualizar perfil", "error");
+            console.error("Erro ao atualizar perfil:", error.response?.data || error);
+            showNotification(error.response?.data?.message || "Erro ao atualizar perfil. Verifique se a imagem não é muito grande.", "error");
         } finally {
             setLoading(false);
         }

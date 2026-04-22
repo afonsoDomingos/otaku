@@ -123,6 +123,7 @@ router.put('/profile', protect, upload.single('profilePic'), async (req, res) =>
             res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
+        console.error("Profile Update Error:", error);
         res.status(500).json({ message: error.message });
     }
 });
