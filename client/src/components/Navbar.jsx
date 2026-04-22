@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSearch } from '../context/SearchContext';
 import { Search, Bell, User, LogOut, X } from 'lucide-react';
+import MusicPlayer from './MusicPlayer';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -23,6 +24,9 @@ const Navbar = () => {
         <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
             <div className="nav-left">
                 <Link to="/" className="logo">OTAKUZONE<span>FLIX</span></Link>
+                <div style={{ marginRight: '20px' }}>
+                    <MusicPlayer />
+                </div>
                 <div className="nav-links">
                     <Link to="/">Início</Link>
                     <Link to="/mangas">Mangás</Link>
