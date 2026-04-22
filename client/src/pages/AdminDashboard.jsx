@@ -20,6 +20,7 @@ const AdminDashboard = () => {
     const [newManga, setNewManga] = useState({ title: '', description: '', thumbnail: '', author: '', genre: '', price: 0, chapters: [] });
     const [newShort, setNewShort] = useState({ title: '', url: '' });
     const [newGuest, setNewGuest] = useState({ name: '', photo: '', role: 'Convidado Especial' });
+    const [editingGuestId, setEditingGuestId] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [processing, setProcessing] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -128,10 +129,20 @@ const AdminDashboard = () => {
     const handleAddGuest = async (e) => {
         e.preventDefault();
         try {
-            await API.post('/guests', newGuest);
+            if (editingGuestId) {
+                await API.put(`/guests/${editingGuestId}`, newGuest);
+            } else {
+                await API.post('/guests', newGuest);
+            }
             setNewGuest({ name: '', photo: '', role: 'Convidado Especial' });
+            setEditingGuestId(null);
             fetchData();
-        } catch (error) { alert("Erro ao adicionar convidado."); }
+        } catch (error) { alert("Erro ao guardar convidado."); }
+    };
+
+    const handleEditGuestClick = (guest) => {
+        setNewGuest({ name: guest.name, photo: guest.photo, role: guest.role });
+        setEditingGuestId(guest._id);
     };
 
     return (
@@ -465,12 +476,21 @@ const AdminDashboard = () => {
             {activeTab === 'convidados' && (
                 <div style={{display: 'flex', gap: '30px'}}>
                     <div style={{flex: 1}}>
-                        <h2>Adicionar Convidado</h2>
+                        <h2>{editingGuestId ? 'Editar Convidado' : 'Adicionar Convidado'}</h2>
                         <form onSubmit={handleAddGuest} style={{background: 'var(--surface)', padding: '20px', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '15px'}}>
                             <input placeholder="Nome (Ex: Meu Mano Denzel)" value={newGuest.name} onChange={e => setNewGuest({...newGuest, name: e.target.value})} required style={{padding: '10px', background: '#111', border: '1px solid #333', color: 'white', borderRadius: '4px'}} />
                             <input placeholder="URL da Foto (opcional)" value={newGuest.photo} onChange={e => setNewGuest({...newGuest, photo: e.target.value})} style={{padding: '10px', background: '#111', border: '1px solid #333', color: 'white', borderRadius: '4px'}} />
                             <input placeholder="Papel (Ex: Convidado Especial)" value={newGuest.role} onChange={e => setNewGuest({...newGuest, role: e.target.value})} style={{padding: '10px', background: '#111', border: '1px solid #333', color: 'white', borderRadius: '4px'}} />
-                            <button type="submit" style={{padding: '12px', background: 'var(--primary)', color: 'white', borderRadius: '4px', fontWeight: 'bold'}}><Plus size={16} /> Adicionar</button>
+                            <div style={{display: 'flex', gap: '10px'}}>
+                                <button type="submit" style={{flex: 1, padding: '12px', background: 'var(--primary)', color: 'white', borderRadius: '4px', fontWeight: 'bold'}}>
+                                    {editingGuestId ? <><Edit2 size={16} /> Atualizar</> : <><Plus size={16} /> Adicionar</>}
+                                </button>
+                                {editingGuestId && (
+                                    <button type="button" onClick={() => {setEditingGuestId(null); setNewGuest({ name: '', photo: '', role: 'Convidado Especial' });}} style={{padding: '12px', background: '#333', color: 'white', borderRadius: '4px', fontWeight: 'bold'}}>
+                                        Cancelar
+                                    </button>
+                                )}
+                            </div>
                         </form>
                     </div>
                     <div style={{flex: 2}}>
@@ -482,7 +502,10 @@ const AdminDashboard = () => {
                                         <img src={g.photo || 'https://via.placeholder.com/150'} alt={g.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
                                     </div>
                                     <h4 style={{padding: '0 10px', fontSize: '0.9rem'}}>{g.name}</h4>
-                                    <button onClick={() => handleDelete('guest', g._id)} style={{background: 'transparent', color: '#ff4444', marginTop: '10px'}}><Trash2 size={16} /></button>
+                                    <div style={{display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '10px'}}>
+                                        <button onClick={() => handleEditGuestClick(g)} style={{background: 'transparent', color: '#3b82f6'}}><Edit2 size={16} /></button>
+                                        <button onClick={() => handleDelete('guest', g._id)} style={{background: 'transparent', color: '#ff4444'}}><Trash2 size={16} /></button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
