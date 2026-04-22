@@ -46,6 +46,7 @@ apiRouter.use('/purchases', require('./routes/purchases'));
 apiRouter.use('/interviews', require('./routes/interviews'));
 apiRouter.use('/guests', require('./routes/guests'));
 apiRouter.use('/partners', require('./routes/partners'));
+apiRouter.use('/reviews', require('./routes/reviews'));
 
 apiRouter.get('/ping', (req, res) => res.json({ 
     message: 'Server is alive', 

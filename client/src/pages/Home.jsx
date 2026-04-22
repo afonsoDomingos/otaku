@@ -19,6 +19,11 @@ const Home = () => {
     const [showPartnerModal, setShowPartnerModal] = useState(false);
     const [partnerForm, setPartnerForm] = useState({ companyName: '', contactEmail: '', proposal: '' });
     const [partnerStatus, setPartnerStatus] = useState('');
+    
+    const [reviews, setReviews] = useState([]);
+    const [showReviewModal, setShowReviewModal] = useState(false);
+    const [reviewForm, setReviewForm] = useState({ name: '', anime: '', comment: '' });
+    const [reviewStatus, setReviewStatus] = useState('');
 
     const fetchData = async () => {
         try {
@@ -27,7 +32,9 @@ const Home = () => {
                 API.get('/shorts')
             ]);
             let gRes = { data: [] };
+            let rRes = { data: [] };
             try { gRes = await API.get('/guests'); } catch (err) {}
+            try { rRes = await API.get('/reviews'); } catch (err) {}
 
             const animesData = Array.isArray(aRes.data) ? aRes.data : [];
             const shortsData = Array.isArray(sRes.data) ? sRes.data : [];
@@ -39,6 +46,7 @@ const Home = () => {
                 { _id: '2', name: 'PURPPLESWAG', photo: 'https://via.placeholder.com/150', role: 'Convidado Especial' }
             ];
             setGuests(fetchedGuests);
+            setReviews(Array.isArray(rRes.data) ? rRes.data : []);
             
             const cats = [...new Set(animesData.map(a => a.category).filter(Boolean))];
             setCategories(cats);
@@ -80,6 +88,23 @@ const Home = () => {
             }, 3000);
         } catch (error) {
             setPartnerStatus('erro');
+        }
+    };
+
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        setReviewStatus('A enviar...');
+        try {
+            await API.post('/reviews', reviewForm);
+            setReviewStatus('sucesso');
+            fetchData(); // Refresh reviews
+            setTimeout(() => {
+                setShowReviewModal(false);
+                setReviewStatus('');
+                setReviewForm({ name: '', anime: '', comment: '' });
+            }, 3000);
+        } catch (error) {
+            setReviewStatus('erro');
         }
     };
 
@@ -293,6 +318,38 @@ const Home = () => {
                             </div>
                         </section>
 
+                        {/* Reviews Section */}
+                        <section className="reviews-section" style={{ padding: '80px 0', overflow: 'hidden', background: 'linear-gradient(to bottom, transparent, rgba(229, 9, 20, 0.05), transparent)' }}>
+                            <div className="container" style={{ textAlign: 'center', marginBottom: '40px' }}>
+                                <h2 className="row-title" style={{ margin: '0 auto', display: 'inline-block' }}>Opiniões da Comunidade</h2>
+                                <p style={{ color: '#aaa', marginTop: '15px' }}>O que os verdadeiros Otakus dizem sobre os animes.</p>
+                                <button 
+                                    onClick={() => setShowReviewModal(true)}
+                                    style={{ marginTop: '20px', padding: '10px 20px', background: 'transparent', border: '1px solid var(--primary)', color: 'var(--primary)', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}
+                                >
+                                    + Deixar a Minha Opinião
+                                </button>
+                            </div>
+                            
+                            <div className="reviews-marquee-container">
+                                <div className="reviews-marquee">
+                                    {reviews.length === 0 ? (
+                                        <div className="review-card"><p>"Ainda não há opiniões. Sê o primeiro!"</p></div>
+                                    ) : (
+                                        [...reviews, ...reviews, ...reviews].map((review, idx) => (
+                                            <div key={idx} className="review-card">
+                                                <div className="review-header">
+                                                    <span className="review-name">{review.name || 'Anónimo'}</span>
+                                                    <span className="review-anime">{review.anime}</span>
+                                                </div>
+                                                <p className="review-comment">"{review.comment}"</p>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </section>
+
                         {/* Parceiros Section */}
                         <section className="partners-section container">
                             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -374,6 +431,62 @@ const Home = () => {
                                     style={{ padding: '14px', background: 'var(--primary)', color: '#fff', fontWeight: 'bold', borderRadius: '6px', marginTop: '10px' }}
                                 >
                                     {partnerStatus === 'A enviar...' ? 'A enviar...' : 'Enviar Proposta'}
+                                </button>
+                            </form>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Review Modal */}
+            {showReviewModal && (
+                <div className="modal-overlay" onClick={() => setShowReviewModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px', background: '#141414', padding: '30px', borderRadius: '12px', border: '1px solid #333' }}>
+                        <button className="close-btn" onClick={() => setShowReviewModal(false)}><X size={24} /></button>
+                        <h2 style={{ marginBottom: '20px', color: '#fff' }}>Deixar Opinião</h2>
+                        {reviewStatus === 'sucesso' ? (
+                            <div style={{ padding: '20px', background: 'rgba(46, 125, 50, 0.2)', color: '#a5d6a7', borderRadius: '8px', textAlign: 'center' }}>
+                                A tua opinião foi enviada! Obrigado pelo teu feedback.
+                            </div>
+                        ) : (
+                            <form onSubmit={handleReviewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>O teu Nome (Opcional)</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Deixa em branco para Anónimo"
+                                        value={reviewForm.name} 
+                                        onChange={e => setReviewForm({...reviewForm, name: e.target.value})}
+                                        style={{ width: '100%', padding: '12px', background: '#0a0a0a', border: '1px solid #333', color: '#fff', borderRadius: '6px' }} 
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>Sobre qual Anime?</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Ex: Jujutsu Kaisen, Geral..."
+                                        value={reviewForm.anime} 
+                                        onChange={e => setReviewForm({...reviewForm, anime: e.target.value})}
+                                        style={{ width: '100%', padding: '12px', background: '#0a0a0a', border: '1px solid #333', color: '#fff', borderRadius: '6px' }} 
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>A tua Opinião *</label>
+                                    <textarea 
+                                        required rows="4" 
+                                        value={reviewForm.comment} 
+                                        onChange={e => setReviewForm({...reviewForm, comment: e.target.value})}
+                                        placeholder="Escreve o que achaste..."
+                                        style={{ width: '100%', padding: '12px', background: '#0a0a0a', border: '1px solid #333', color: '#fff', borderRadius: '6px', resize: 'vertical' }} 
+                                    />
+                                </div>
+                                {reviewStatus === 'erro' && <p style={{ color: '#ef4444', fontSize: '0.9rem' }}>Erro ao enviar. Tenta novamente.</p>}
+                                <button 
+                                    type="submit" 
+                                    disabled={reviewStatus === 'A enviar...'}
+                                    style={{ padding: '14px', background: 'var(--primary)', color: '#fff', fontWeight: 'bold', borderRadius: '6px', marginTop: '10px' }}
+                                >
+                                    {reviewStatus === 'A enviar...' ? 'A enviar...' : 'Publicar Opinião'}
                                 </button>
                             </form>
                         )}
@@ -598,6 +711,26 @@ const Home = () => {
                 .guest-name { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 5px; transition: color 0.3s; }
                 .guest-card:hover .guest-name { color: var(--primary); text-shadow: 0 0 10px rgba(229, 9, 20, 0.4); }
                 .guest-role { font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+                /* Reviews Section */
+                .reviews-marquee-container { width: 100vw; overflow: hidden; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; padding: 20px 0; }
+                .reviews-marquee { display: flex; gap: 30px; width: max-content; animation: marquee 30s linear infinite; }
+                .reviews-marquee:hover { animation-play-state: paused; }
+                .review-card {
+                    background: #111; border-left: 3px solid var(--primary); padding: 25px; border-radius: 8px;
+                    width: 350px; flex-shrink: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+                    transition: transform 0.3s ease;
+                }
+                .review-card:hover { transform: translateY(-5px); background: #161616; border-color: #fff; }
+                .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+                .review-name { font-weight: 900; color: #fff; font-size: 1rem; }
+                .review-anime { font-size: 0.75rem; background: rgba(229,9,20,0.1); color: var(--primary); padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
+                .review-comment { color: #aaa; font-size: 0.95rem; line-height: 1.5; font-style: italic; }
+
+                @keyframes marquee {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-33.33%); } /* Assuming 3 cloned sets */
+                }
             `}</style>
         </div>
     );
