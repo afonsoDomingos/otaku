@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import API from '../api';
 import { Camera, User, Mail, Lock, Save, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -14,12 +15,7 @@ const Profile = () => {
     const [preview, setPreview] = useState(user?.profilePic || '');
     const [imgError, setImgError] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
-
-    const showNotification = (message, type = 'success') => {
-        setNotification({ show: true, message, type });
-        setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 3000);
-    };
+    const { showToast } = useToast();
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -43,10 +39,10 @@ const Profile = () => {
             const { data } = await API.put('/auth/profile', formData);
             setUser(data);
             localStorage.setItem('user', JSON.stringify(data));
-            showNotification("Perfil atualizado com sucesso!");
+            showToast("Perfil atualizado com sucesso!");
         } catch (error) {
             console.error("Erro ao atualizar perfil:", error.response?.data || error);
-            showNotification(error.response?.data?.message || "Erro ao atualizar perfil. Verifique se a imagem não é muito grande.", "error");
+            showToast(error.response?.data?.message || "Erro ao atualizar perfil. Verifique se a imagem não é muito grande.", "error");
         } finally {
             setLoading(false);
         }
@@ -54,11 +50,6 @@ const Profile = () => {
 
     return (
         <div className="profile-page container">
-            {notification.show && (
-                <div className={`notification-toast ${notification.type}`}>
-                    {notification.message}
-                </div>
-            )}
             <button onClick={() => navigate(-1)} className="back-btn">
                 <ArrowLeft size={20} /> Voltar
             </button>

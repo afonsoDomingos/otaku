@@ -15,6 +15,7 @@ import MangaReader from './pages/MangaReader';
 import PodcastSchedule from './pages/PodcastSchedule';
 import Profile from './pages/Profile';
 import { SearchProvider } from './context/SearchContext';
+import { ToastProvider } from './context/ToastContext';
 import ScrollToTop from './components/ScrollToTop';
 import ActivityTracker from './components/ActivityTracker';
 
@@ -29,8 +30,9 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
 function App() {
   return (
     <AuthProvider>
-      <SearchProvider>
-        <Router>
+      <ToastProvider>
+        <SearchProvider>
+          <Router>
           <Navbar />
           <ScrollToTop />
           <ActivityTracker />
@@ -50,6 +52,7 @@ function App() {
           </Routes>
         </Router>
       </SearchProvider>
+      </ToastProvider>
     </AuthProvider>
   );
 }

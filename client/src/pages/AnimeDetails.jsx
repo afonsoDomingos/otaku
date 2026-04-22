@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import API from '../api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { CheckCircle, X, Upload, CreditCard, Play } from 'lucide-react';
 import Footer from '../components/Footer';
 
 const AnimeDetails = () => {
     const { id } = useParams();
     const { user } = useAuth();
+    const { showToast } = useToast();
     const navigate = useNavigate();
     const [anime, setAnime] = useState(null);
     const [others, setOthers] = useState([]);
@@ -40,7 +42,7 @@ const AnimeDetails = () => {
         const hasEpisodes = season.episodes && season.episodes.length > 0 && season.episodes.some(ep => ep.videoUrl && ep.videoUrl.trim() !== "");
         
         if (!hasEpisodes) {
-            return alert("🌸 Opa! Esta temporada ainda está em processamento e não tem episódios disponíveis no momento. Por favor, aguarda pela disponibilidade. Agradecemos a tua paciência e paixão Otaku! ✨");
+            return showToast("🌸 Opa! Esta temporada ainda está em processamento e não tem episódios disponíveis no momento. Por favor, aguarda pela disponibilidade. Agradecemos a tua paciência e paixão Otaku! ✨", "info");
         }
 
         setSelectedSeason(season);
@@ -49,7 +51,7 @@ const AnimeDetails = () => {
 
     const handleUpload = async (e) => {
         e.preventDefault();
-        if (!proof) return alert("Por favor, selecione um comprovativo.");
+        if (!proof) return showToast("Por favor, selecione um comprovativo.", "warning");
 
         setUploading(true);
         const formData = new FormData();
@@ -62,11 +64,11 @@ const AnimeDetails = () => {
             await API.post('/purchases', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            alert("Comprovativo enviado com sucesso! Aguarde a aprovação.");
+            showToast("Comprovativo enviado com sucesso! Aguarde a aprovação.");
             setShowModal(false);
             setProof(null);
         } catch (error) {
-            alert("Erro ao enviar comprovativo.");
+            showToast("Erro ao enviar comprovativo.", "error");
         } finally {
             setUploading(false);
         }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import API from '../api';
+import { useToast } from '../context/ToastContext';
 import { Check, X, ExternalLink, User as UserIcon, Film, Plus, Trash2, Upload, PlusCircle, Edit2 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -29,12 +30,7 @@ const AdminDashboard = () => {
     const [uploadTarget, setUploadTarget] = useState('');
     const [uploadFileName, setUploadFileName] = useState('');
     const [uploadError, setUploadError] = useState('');
-    const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
-
-    const showNotification = (message, type = 'success') => {
-        setNotification({ show: true, message, type });
-        setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 3000);
-    };
+    const { showToast } = useToast();
 
     const fetchData = async () => {
         try {
@@ -85,8 +81,8 @@ const AdminDashboard = () => {
         try {
             await API.delete(`/${type}s/${id}`);
             fetchData();
-            showNotification(`Removido com sucesso!`);
-        } catch (error) { showNotification("Erro ao deletar", "error"); }
+            showToast(`Removido com sucesso!`);
+        } catch (error) { showToast("Erro ao deletar", "error"); }
     };
 
     const handleFileUpload = async (e, target) => {
@@ -158,8 +154,8 @@ const AdminDashboard = () => {
             setNewGuest({ name: '', photo: '', role: 'Convidado Especial', podcastUrl: '' });
             setEditingGuestId(null);
             fetchData();
-            showNotification(editingGuestId ? "Convidado atualizado!" : "Convidado adicionado!");
-        } catch (error) { showNotification("Erro ao guardar convidado", "error"); }
+            showToast(editingGuestId ? "Convidado atualizado!" : "Convidado adicionado!");
+        } catch (error) { showToast("Erro ao guardar convidado", "error"); }
     };
 
     const handleEditGuestClick = (guest) => {
@@ -344,8 +340,8 @@ const AdminDashboard = () => {
                                         }
                                         setNewAnime({ title: '', category: '', description: '', thumbnail: '', seasons: [{ title: 'Temporada 1', price: 100, episodes: [{ title: 'Episódio 1', videoUrl: '' }] }] });
                                         fetchData(); 
-                                        showNotification("Anime guardado com sucesso!");
-                                    } catch (e) { showNotification("Erro ao guardar anime", "error"); }
+                                        showToast("Anime guardado com sucesso!");
+                                    } catch (e) { showToast("Erro ao guardar anime", "error"); }
                                 }}>Salvar Anime Completo</button>
                                 {newAnime._id && (
                                     <button className="auth-btn" style={{ background: '#555' }} onClick={() => setNewAnime({ title: '', category: '', description: '', thumbnail: '', seasons: [{ title: 'Temporada 1', price: 100, episodes: [{ title: 'Episódio 1', videoUrl: '' }] }] })}>Cancelar</button>
@@ -445,8 +441,8 @@ const AdminDashboard = () => {
                                         }
                                         setNewManga({ title: '', description: '', thumbnail: '', author: '', genre: '', price: 0, chapters: [] });
                                         fetchData(); 
-                                        showNotification("Mangá guardado com sucesso!");
-                                    } catch (error) { showNotification("Erro ao guardar mangá", "error"); }
+                                        showToast("Mangá guardado com sucesso!");
+                                    } catch (error) { showToast("Erro ao guardar mangá", "error"); }
                                 }}>Salvar Mangá Completo</button>
                                 {newManga._id && (
                                     <button className="auth-btn" style={{ background: '#555' }} onClick={() => setNewManga({ title: '', description: '', thumbnail: '', author: '', genre: '', price: 0, chapters: [] })}>Cancelar</button>
@@ -489,8 +485,8 @@ const AdminDashboard = () => {
                                 await API.post('/shorts', { title: 'New Short', url: newShort.url, youtubeId: yId });
                                 setNewShort({ title: '', url: '' });
                                 fetchData();
-                                showNotification("Short adicionado!");
-                            } catch (e) { showNotification("Erro ao adicionar short", "error"); }
+                                showToast("Short adicionado!");
+                            } catch (e) { showToast("Erro ao adicionar short", "error"); }
                         }}>Adicionar</button>
                     </div>
                     <div className="admin-anime-grid">

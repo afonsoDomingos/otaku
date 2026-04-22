@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import API from '../api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { CheckCircle, X, Upload, CreditCard, BookOpen } from 'lucide-react';
 import Footer from '../components/Footer';
 
 const MangaDetails = () => {
     const { id } = useParams();
     const { user } = useAuth();
+    const { showToast } = useToast();
     const navigate = useNavigate();
     const [manga, setManga] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -36,7 +38,7 @@ const MangaDetails = () => {
 
     const handleUpload = async (e) => {
         e.preventDefault();
-        if (!proof) return alert("Selecione o comprovativo.");
+        if (!proof) return showToast("Selecione o comprovativo.", "warning");
 
         setUploading(true);
         const formData = new FormData();
@@ -45,10 +47,10 @@ const MangaDetails = () => {
 
         try {
             await API.post('/purchases', formData);
-            alert("Comprovativo enviado! Aguarde a aprovação do administrador.");
+            showToast("Comprovativo enviado! Aguarde a aprovação do administrador.");
             setShowModal(false);
         } catch (error) {
-            alert("Erro ao enviar comprovativo.");
+            showToast("Erro ao enviar comprovativo.", "error");
         } finally {
             setUploading(false);
         }
