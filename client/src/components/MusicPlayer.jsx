@@ -76,7 +76,7 @@ const MusicPlayer = () => {
                         </div>
                     ) : <Music size={18} />}
                 </div>
-                <span className="music-label">{isPlaying ? 'Tocando' : 'Trilha'}</span>
+                <span className="music-label">{isPlaying ? 'Tocando: Lil Matimbe Ft Vibe - Otaku' : 'Lil Matimbe Ft Vibe - Otaku'}</span>
             </div>
             
             <button 
@@ -100,7 +100,11 @@ const MusicPlayer = () => {
                 .music-nav-item {
                     display: flex;
                     align-items: center;
-                    gap: 8px;
+                    gap: 12px;
+                    background: rgba(255,255,255,0.03);
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    border: 1px solid rgba(255,255,255,0.05);
                 }
 
                 .music-download-btn {
@@ -150,6 +154,9 @@ const MusicPlayer = () => {
                     cursor: pointer;
                     transition: all 0.3s;
                     color: #fff;
+                    white-space: nowrap;
+                    max-width: 250px;
+                    overflow: hidden;
                 }
 
                 .music-btn:hover {
@@ -172,10 +179,12 @@ const MusicPlayer = () => {
                 }
 
                 .music-label {
-                    font-size: 0.75rem;
+                    font-size: 0.7rem;
                     font-weight: 700;
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
 
                 .nav-visualizer {
@@ -200,9 +209,9 @@ const MusicPlayer = () => {
                     50% { transform: scaleY(1); }
                 }
 
-                @media (max-width: 768px) {
+                @media (max-width: 900px) {
                     .music-label { display: none; }
-                    .music-btn { padding: 8px; border-radius: 50%; }
+                    .music-nav-item { padding: 4px; background: none; border: none; }
                 }
             `}</style>
         </div>
