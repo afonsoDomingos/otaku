@@ -522,18 +522,26 @@ const AdminDashboard = () => {
                     <div style={{flex: 2}}>
                         <h2>Convidados Registados</h2>
                         <div className="admin-anime-grid" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))'}}>
-                            {guests.map(g => (
-                                <div key={g._id} className="admin-anime-card" style={{textAlign: 'center', paddingBottom: '10px'}}>
-                                    <div style={{width: '100px', height: '100px', margin: '15px auto', borderRadius: '50%', overflow: 'hidden', border: '2px solid #e50914'}}>
-                                        <img src={g.photo || 'https://via.placeholder.com/150'} alt={g.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-                                    </div>
-                                    <h4 style={{padding: '0 10px', fontSize: '0.9rem'}}>{g.name}</h4>
-                                    <div style={{display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '10px'}}>
-                                        <button onClick={() => handleEditGuestClick(g)} style={{background: 'transparent', color: '#3b82f6'}}><Edit2 size={16} /></button>
-                                        <button onClick={() => handleDelete('guest', g._id)} style={{background: 'transparent', color: '#ff4444'}}><Trash2 size={16} /></button>
-                                    </div>
+                            {guests.length === 0 ? (
+                                <div style={{gridColumn: '1 / -1', textAlign: 'center', padding: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', color: '#888'}}>
+                                    <UserIcon size={40} style={{marginBottom: '10px', opacity: 0.5}} />
+                                    <p>Nenhum convidado registado no banco de dados.</p>
+                                    <p style={{fontSize: '0.8rem', marginTop: '5px'}}>Adiciona o primeiro convidado usando o formulário à esquerda.</p>
                                 </div>
-                            ))}
+                            ) : (
+                                guests.map(g => (
+                                    <div key={g._id} className="admin-anime-card" style={{textAlign: 'center', paddingBottom: '10px'}}>
+                                        <div style={{width: '100px', height: '100px', margin: '15px auto', borderRadius: '50%', overflow: 'hidden', border: '2px solid #e50914'}}>
+                                            <img src={g.photo || 'https://via.placeholder.com/150'} alt={g.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                                        </div>
+                                        <h4 style={{padding: '0 10px', fontSize: '0.9rem'}}>{g.name}</h4>
+                                        <div style={{display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '10px'}}>
+                                            <button onClick={() => handleEditGuestClick(g)} style={{background: 'transparent', color: '#3b82f6'}}><Edit2 size={16} /></button>
+                                            <button onClick={() => handleDelete('guest', g._id)} style={{background: 'transparent', color: '#ff4444'}}><Trash2 size={16} /></button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>

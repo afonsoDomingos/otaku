@@ -42,10 +42,7 @@ const Home = () => {
             setAnimes(animesData);
             setShorts(shortsData);
             
-            const fetchedGuests = Array.isArray(gRes.data) && gRes.data.length > 0 ? gRes.data : [
-                { _id: '1', name: 'Meu Mano Denzel', photo: 'https://via.placeholder.com/150', role: 'Convidado Especial' },
-                { _id: '2', name: 'PURPPLESWAG', photo: 'https://via.placeholder.com/150', role: 'Convidado Especial' }
-            ];
+            const fetchedGuests = Array.isArray(gRes.data) ? gRes.data : [];
             setGuests(fetchedGuests);
             setReviews(Array.isArray(rRes.data) ? rRes.data : []);
             
