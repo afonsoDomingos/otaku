@@ -231,10 +231,37 @@ const Home = () => {
                                         estamos aqui para garantir que sua jornada seja épica. Prepare o ramen, 
                                         escolha seu clã e divirta-se!
                                     </p>
-                                    <div className="social-cta">
+                                    <a 
+                                        href="https://www.youtube.com/@Universo_Otaku_Podcast" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer" 
+                                        className="social-cta"
+                                        style={{ textDecoration: 'none', display: 'inline-block' }}
+                                    >
                                         <p>Junta-te ao nosso Podcast e debates semanais!</p>
-                                    </div>
+                                    </a>
                                 </div>
+                            </div>
+                        </section>
+
+                        {/* Parceiros Section */}
+                        <section className="partners-section container">
+                            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                                <h2 className="row-title" style={{ margin: '0 auto', display: 'inline-block' }}>Nossos Parceiros</h2>
+                            </div>
+                            <div className="partners-grid">
+                                <a 
+                                    href="https://inscreva-se.com/" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="partner-card"
+                                >
+                                    <div className="partner-logo">
+                                        <h3>INSCREVA-SE</h3>
+                                    </div>
+                                    <p>Plataforma de Inscrições</p>
+                                </a>
+                                {/* Podes adicionar mais parceiros aqui depois */}
                             </div>
                         </section>
                     </>
@@ -412,6 +439,26 @@ const Home = () => {
                     padding: 0; border: none; text-shadow: 0 0 5px #fff;
                 }
                 .badge { background: #E50914; color: white; padding: 5px 12px; font-weight: bold; border-radius: 4px; font-size: 0.85rem; width: fit-content; text-transform: uppercase; box-shadow: 0 0 10px rgba(229, 9, 20, 0.4); }
+                
+                /* Partners Section */
+                .partners-section { padding: 60px 0; border-top: 1px solid #222; }
+                .partners-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+                .partner-card {
+                    display: flex; flex-direction: column; align-items: center; gap: 15px;
+                    text-decoration: none; transition: all 0.3s ease; cursor: pointer;
+                }
+                .partner-logo {
+                    width: 240px; height: 100px; background: #0c0c0c; border: 1px solid #333; border-radius: 8px;
+                    display: flex; align-items: center; justify-content: center;
+                    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                }
+                .partner-logo h3 { font-size: 1.4rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
+                .partner-card:hover .partner-logo {
+                    transform: translateY(-8px) scale(1.05); border-color: var(--primary);
+                    box-shadow: 0 15px 30px rgba(229, 9, 20, 0.3);
+                }
+                .partner-card p { color: #888; font-size: 0.95rem; transition: color 0.3s; font-weight: 500; }
+                .partner-card:hover p { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
             `}</style>
         </div>
     );
