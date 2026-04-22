@@ -16,6 +16,7 @@ const Home = () => {
     const [guests, setGuests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeHero, setActiveHero] = useState(0);
+    const [showPartnerModal, setShowPartnerModal] = useState(false);
     const [partnerForm, setPartnerForm] = useState({ companyName: '', contactEmail: '', proposal: '' });
     const [partnerStatus, setPartnerStatus] = useState('');
     const [isSlow, setIsSlow] = useState(false);
