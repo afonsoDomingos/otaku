@@ -259,6 +259,14 @@ const Home = () => {
                 .hero-slide.active .hero-content { transform: translateY(0); opacity: 1; text-shadow: 2px 2px 15px rgba(0,0,0,0.9); }
                 .featured-badge { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: 4px; margin-bottom: 20px; border-left: 3px solid #E50914; width: fit-content; font-size: 0.85rem; font-weight: 700; letter-spacing: 1.5px; }
                 .hero-content h1 { font-size: clamp(3rem, 10vw, 5rem); font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+                .hero-slide.active .hero-content h1 {
+                    animation: typing-reveal 1.5s steps(25, end) forwards;
+                    clip-path: inset(0 100% 0 0);
+                }
+                @keyframes typing-reveal {
+                    0% { clip-path: inset(0 100% 0 0); }
+                    100% { clip-path: inset(0 0% 0 0); }
+                }
                 .hero-content p { font-size: 1.25rem; line-height: 1.4; color: #f3f3f3; margin-bottom: 30px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; max-width: 600px; }
                 .hero-btns { display: flex; gap: 15px; }
                 .carousel-indicators { position: absolute; bottom: 200px; left: 4%; display: flex; gap: 12px; z-index: 10; }
@@ -267,7 +275,11 @@ const Home = () => {
                 /* Cinematic Rows */
                 .main-content { position: relative; z-index: 5; margin-top: -10vw; padding-bottom: 100px; background: linear-gradient(to bottom, transparent, #080808 5%); }
                 .row-container { padding-left: 4%; margin-bottom: 50px; }
-                .row-title { font-size: 1.8rem; margin-bottom: 25px; font-weight: 800; color: #fff; letter-spacing: -0.5px; position: relative; display: inline-block; }
+                .row-title { 
+                    font-size: 1.8rem; margin-bottom: 25px; font-weight: 800; color: #fff; letter-spacing: -0.5px; position: relative; display: inline-block; 
+                    animation: typing-reveal 1.2s steps(20, end) forwards;
+                    clip-path: inset(0 100% 0 0);
+                }
                 .row-title::after { content: ''; position: absolute; left: 0; bottom: -8px; width: 40px; height: 3px; background: #E50914; border-radius: 2px; }
                 
                 .row-scroll { display: flex; gap: 20px; overflow-x: auto; padding: 10px 0 30px; scrollbar-width: none; mask-image: linear-gradient(to right, black 85%, transparent 100%); }
