@@ -18,6 +18,11 @@ const AdminDashboard = () => {
     const [newManga, setNewManga] = useState({ title: '', description: '', thumbnail: '', author: '', genre: '', price: 0, chapters: [] });
     const [newShort, setNewShort] = useState({ title: '', url: '' });
     const [uploading, setUploading] = useState(false);
+    const [processing, setProcessing] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [uploadTarget, setUploadTarget] = useState('');
+    const [uploadFileName, setUploadFileName] = useState('');
+    const [uploadError, setUploadError] = useState('');
 
     const fetchData = async () => {
         try {
@@ -66,25 +71,101 @@ const AdminDashboard = () => {
     const handleFileUpload = async (e, target) => {
         const file = e.target.files[0];
         if (!file) return;
+        const isVideo = file.type.startsWith('video');
+        const maxSize = isVideo ? 500 * 1024 * 1024 : 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+            const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+            setUploadError(`Ficheiro "${file.name}" tem ${sizeMB}MB. O limite é ${isVideo ? '500MB para vídeos' : '10MB para imagens'}.`);
+            setTimeout(() => setUploadError(''), 6000);
+            return;
+        }
+        setUploadError('');
+        const targetKey = typeof target === 'string' ? target : `ep_${target.sIdx}_${target.eIdx}`;
         setUploading(true);
+        setProcessing(false);
+        setUploadProgress(0);
+        setUploadTarget(targetKey);
+        setUploadFileName(file.name);
         const formData = new FormData();
         formData.append('file', file);
         try {
             const { data } = await API.post('/animes/upload', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
+                headers: { 'Content-Type': 'multipart/form-data' },
+                onUploadProgress: (ev) => {
+                    const pct = Math.round((ev.loaded * 100) / ev.total);
+                    setUploadProgress(pct);
+                    if (pct === 100) setProcessing(true);
+                }
             });
-            if (target === 'anime') setNewAnime({...newAnime, thumbnail: data.url});
-            else if (target === 'manga') setNewManga({...newManga, thumbnail: data.url});
+            if (target === 'anime') setNewAnime(prev => ({...prev, thumbnail: data.url}));
+            else if (target === 'manga') setNewManga(prev => ({...prev, thumbnail: data.url}));
             else {
-                const updated = [...newAnime.seasons];
-                updated[target.sIdx].episodes[target.eIdx].videoUrl = data.url;
-                setNewAnime({...newAnime, seasons: updated});
+                setNewAnime(prev => {
+                    const updated = [...prev.seasons];
+                    updated[target.sIdx].episodes[target.eIdx].videoUrl = data.url;
+                    return {...prev, seasons: updated};
+                });
             }
-        } catch (error) { alert("Erro no upload."); } finally { setUploading(false); }
+        } catch (error) {
+            const msg = error.response?.data?.message || error.message || 'Erro desconhecido';
+            alert(`Erro no upload: ${msg}`);
+        } finally {
+            setUploading(false);
+            setProcessing(false);
+            setUploadProgress(0);
+            setUploadTarget('');
+            setUploadFileName('');
+        }
     };
 
     return (
         <div className="admin-page container" style={{paddingTop: '100px'}}>
+
+            {/* ── File Size Error Banner ── */}
+            {uploadError && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10000,
+                    background: '#7f1d1d', borderBottom: '2px solid #ef4444',
+                    padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px'
+                }}>
+                    <span style={{ fontSize: '0.88rem', color: '#fecaca', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        ⚠️ <strong>Ficheiro demasiado grande:</strong> {uploadError}
+                    </span>
+                    <button onClick={() => setUploadError('')} style={{ background: 'transparent', color: '#fca5a5', fontSize: '1.2rem', padding: '0 6px', flexShrink: 0 }}>✕</button>
+                </div>
+            )}
+
+            {/* ── Global Upload/Processing Status Bar ── */}
+            {uploading && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999,
+                    background: '#1a1a1a', borderBottom: '1px solid #333',
+                    padding: '10px 20px', display: 'flex', flexDirection: 'column', gap: '6px'
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.85rem', color: '#ccc', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {processing
+                                ? <span style={{ color: '#f5a623' }}>⚙️ A processar no Cloudinary... aguarda</span>
+                                : <><Upload size={14} color="#e50914" /> A enviar: <strong style={{color:'#fff'}}>{uploadFileName}</strong></>}
+                        </span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: processing ? '#f5a623' : '#e50914' }}>
+                            {processing ? 'Processando...' : `${uploadProgress}%`}
+                        </span>
+                    </div>
+                    <div style={{ background: '#333', borderRadius: '4px', overflow: 'hidden', height: '5px' }}>
+                        {processing ? (
+                            <div style={{
+                                height: '100%', background: 'linear-gradient(90deg, #f5a623, #e50914, #f5a623)',
+                                backgroundSize: '200% 100%',
+                                animation: 'shimmer 1.4s linear infinite'
+                            }} />
+                        ) : (
+                            <div style={{ width: `${uploadProgress}%`, background: '#e50914', height: '100%', transition: 'width 0.2s' }} />
+                        )}
+                    </div>
+                </div>
+            )}
+
             <h1 style={{marginBottom: '30px'}}>Painel Admin</h1>
             <div className="admin-tabs">
                 {['purchases', 'catalog', 'mangas', 'shorts', 'podcast'].map(tab => (
@@ -132,7 +213,29 @@ const AdminDashboard = () => {
                         <h2>{newAnime._id ? 'Editar Anime' : 'Novo Anime'}</h2>
                         <div style={{ display: 'flex', gap: '15px', flexDirection: 'column', marginTop: '15px' }}>
                             <input type="text" placeholder="Título" value={newAnime.title} onChange={e => setNewAnime({...newAnime, title: e.target.value})} />
-                            <input type="text" placeholder="URL da Capa (Thumbnail)" value={newAnime.thumbnail || ''} onChange={e => setNewAnime({...newAnime, thumbnail: e.target.value})} />
+                            <input type="text" placeholder="Categoria (ex: Ação, Drama)" value={newAnime.category || ''} onChange={e => setNewAnime({...newAnime, category: e.target.value})} />
+                            {/* Thumbnail: URL + Upload */}
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                                <div style={{ flex: 1, minWidth: '200px' }}>
+                                    <label style={{ fontSize: '0.75rem', color: '#aaa', marginBottom: '4px', display: 'block' }}>Capa (Thumbnail)</label>
+                                    <input type="text" placeholder="Cole um URL de imagem" value={newAnime.thumbnail || ''} onChange={e => setNewAnime({...newAnime, thumbnail: e.target.value})} style={{ marginBottom: '6px' }} />
+                                    <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: uploading && uploadTarget==='anime' ? 'wait' : 'pointer', background: '#333', padding: '8px 12px', borderRadius: '4px', fontSize: '0.85rem', border: '1px dashed #555' }}>
+                                        <Upload size={14} /> {uploading && uploadTarget==='anime' ? `${uploadProgress}%` : 'Ou faz upload de imagem'}
+                                        <input type="file" hidden onChange={e => handleFileUpload(e, 'anime')} accept="image/*" disabled={uploading} />
+                                    </label>
+                                    {uploading && uploadTarget==='anime' && (
+                                        <div style={{ marginTop: '6px', background: '#333', borderRadius: '4px', overflow: 'hidden', height: '6px' }}>
+                                            <div style={{ width: `${uploadProgress}%`, background: '#e50914', height: '100%', transition: 'width 0.3s' }} />
+                                        </div>
+                                    )}
+                                </div>
+                                {newAnime.thumbnail && (
+                                    <div style={{ width: '80px', flexShrink: 0 }}>
+                                        <label style={{ fontSize: '0.75rem', color: '#aaa', marginBottom: '4px', display: 'block' }}>Preview</label>
+                                        <img src={newAnime.thumbnail} alt="preview" style={{ width: '80px', height: '110px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #444' }} onError={e => e.target.style.display='none'} />
+                                    </div>
+                                )}
+                            </div>
                             
                             <textarea placeholder="Descrição Mínima" value={newAnime.description || ''} onChange={e => setNewAnime({...newAnime, description: e.target.value})} rows="3" />
                             
@@ -151,10 +254,21 @@ const AdminDashboard = () => {
                                             <div key={eIdx} style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
                                                 <input type="text" placeholder="Ep 1" value={ep.title} onChange={e => { const updated = [...newAnime.seasons]; updated[sIdx].episodes[eIdx].title = e.target.value; setNewAnime({...newAnime, seasons: updated})}} style={{ width: '150px' }} />
                                                 <input type="text" placeholder="URL Ext/Cloudinary Vídeo" value={ep.videoUrl} onChange={e => { const updated = [...newAnime.seasons]; updated[sIdx].episodes[eIdx].videoUrl = e.target.value; setNewAnime({...newAnime, seasons: updated})}} />
-                                                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: '#222', padding: '0 10px', borderRadius: '4px' }}>
-                                                    <Upload size={14} color="#aaa" />
-                                                    <input type="file" hidden onChange={e => handleFileUpload(e, {sIdx, eIdx})} accept="video/*" disabled={uploading} />
-                                                </label>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '90px' }}>
+                                                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: uploading ? 'wait' : 'pointer', background: uploading && uploadTarget===`ep_${sIdx}_${eIdx}` ? '#1a1a1a' : '#222', padding: '0 10px', borderRadius: '4px', height: '38px', fontSize: '0.75rem', color: '#aaa', whiteSpace: 'nowrap' }}>
+                                                        {uploading && uploadTarget===`ep_${sIdx}_${eIdx}`
+                                                            ? (processing ? <span style={{color:'#f5a623'}}>⚙️ {uploadProgress}%</span> : <><Upload size={12} color="#e50914" /> {uploadProgress}%</>)
+                                                            : <><Upload size={12} color="#aaa" /> Vídeo</>}
+                                                        <input type="file" hidden onChange={e => handleFileUpload(e, {sIdx, eIdx})} accept="video/*" disabled={uploading} />
+                                                    </label>
+                                                    {uploading && uploadTarget===`ep_${sIdx}_${eIdx}` && (
+                                                        <div style={{ background: '#333', borderRadius: '4px', overflow: 'hidden', height: '3px' }}>
+                                                            {processing
+                                                                ? <div style={{ height: '100%', background: 'linear-gradient(90deg,#f5a623,#e50914,#f5a623)', backgroundSize:'200% 100%', animation:'shimmer 1.4s linear infinite' }} />
+                                                                : <div style={{ width: `${uploadProgress}%`, background: '#e50914', height: '100%', transition: 'width 0.2s' }} />}
+                                                        </div>
+                                                    )}
+                                                </div>
                                                 <button onClick={() => { const updated = [...newAnime.seasons]; updated[sIdx].episodes.splice(eIdx,1); setNewAnime({...newAnime, seasons: updated})}} style={{ background: 'transparent' }}><X size={18} color="#aaa" /></button>
                                             </div>
                                         ))}
@@ -164,13 +278,7 @@ const AdminDashboard = () => {
                                 <button className="auth-btn" style={{ margin: '0', padding: '10px', background: '#2e7d32', width: '100%', fontSize: '0.95rem' }} onClick={() => setNewAnime({...newAnime, seasons: [...(newAnime.seasons||[]), { title: `Temporada ${(newAnime.seasons?.length||0)+1}`, price: 100, episodes: [] }]})}>+ Nova Temporada</button>
                             </div>
                             
-                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 0' }}>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', background: '#333', padding: '10px', borderRadius: '4px', fontSize: '0.9rem' }}>
-                                    <Upload size={16} /> {uploading ? 'A carregar...' : 'Fazer Upload da Imagem'}
-                                    <input type="file" hidden onChange={e => handleFileUpload(e, 'anime')} accept="image/*" disabled={uploading} />
-                                </label>
-                                <span style={{ fontSize: '0.8rem', color: '#888' }}>ou insira um URL no campo acima</span>
-                            </div>
+
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <button className="auth-btn" onClick={async () => { 
                                     if (newAnime._id) {
@@ -210,9 +318,28 @@ const AdminDashboard = () => {
                         <h2>{newManga._id ? 'Editar Mangá' : 'Novo Mangá'}</h2>
                         <div style={{ display: 'flex', gap: '15px', flexDirection: 'column', marginTop: '15px' }}>
                             <input type="text" placeholder="Título" value={newManga.title} onChange={e => setNewManga({...newManga, title: e.target.value})} />
-                            <input type="text" placeholder="URL da Capa (Thumbnail)" value={newManga.thumbnail || ''} onChange={e => setNewManga({...newManga, thumbnail: e.target.value})} />
-                            
-                            <input type="text" placeholder="URL da Capa (Thumbnail)" value={newManga.thumbnail || ''} onChange={e => setNewManga({...newManga, thumbnail: e.target.value})} />
+                            {/* Thumbnail: URL + Upload */}
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                                <div style={{ flex: 1, minWidth: '200px' }}>
+                                    <label style={{ fontSize: '0.75rem', color: '#aaa', marginBottom: '4px', display: 'block' }}>Capa (Thumbnail)</label>
+                                    <input type="text" placeholder="Cole um URL de imagem" value={newManga.thumbnail || ''} onChange={e => setNewManga({...newManga, thumbnail: e.target.value})} style={{ marginBottom: '6px' }} />
+                                    <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: uploading && uploadTarget==='manga' ? 'wait' : 'pointer', background: '#333', padding: '8px 12px', borderRadius: '4px', fontSize: '0.85rem', border: '1px dashed #555' }}>
+                                        <Upload size={14} /> {uploading && uploadTarget==='manga' ? `${uploadProgress}%` : 'Ou faz upload de imagem'}
+                                        <input type="file" hidden onChange={e => handleFileUpload(e, 'manga')} accept="image/*" disabled={uploading} />
+                                    </label>
+                                    {uploading && uploadTarget==='manga' && (
+                                        <div style={{ marginTop: '6px', background: '#333', borderRadius: '4px', overflow: 'hidden', height: '6px' }}>
+                                            <div style={{ width: `${uploadProgress}%`, background: '#e50914', height: '100%', transition: 'width 0.3s' }} />
+                                        </div>
+                                    )}
+                                </div>
+                                {newManga.thumbnail && (
+                                    <div style={{ width: '80px', flexShrink: 0 }}>
+                                        <label style={{ fontSize: '0.75rem', color: '#aaa', marginBottom: '4px', display: 'block' }}>Preview</label>
+                                        <img src={newManga.thumbnail} alt="preview" style={{ width: '80px', height: '110px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #444' }} onError={e => e.target.style.display='none'} />
+                                    </div>
+                                )}
+                            </div>
                             
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <input type="text" placeholder="Autor" value={newManga.author || ''} onChange={e => setNewManga({...newManga, author: e.target.value})} />
@@ -244,13 +371,7 @@ const AdminDashboard = () => {
                                 <button className="auth-btn" style={{ margin: '0', padding: '10px', background: '#2e7d32', width: '100%', fontSize: '0.95rem' }} onClick={() => setNewManga({...newManga, chapters: [...(newManga.chapters||[]), { number: (newManga.chapters?.length||0)+1, title: '', pages: [] }]})}>+ Novo Capítulo</button>
                             </div>
                             
-                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 0' }}>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', background: '#333', padding: '10px', borderRadius: '4px', fontSize: '0.9rem' }}>
-                                    <Upload size={16} /> {uploading ? 'A carregar...' : 'Fazer Upload da Imagem'}
-                                    <input type="file" hidden onChange={e => handleFileUpload(e, 'manga')} accept="image/*" disabled={uploading} />
-                                </label>
-                                <span style={{ fontSize: '0.8rem', color: '#888' }}>ou insira um URL no campo acima</span>
-                            </div>
+
 
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <button className="auth-btn" onClick={async () => { 
@@ -341,6 +462,10 @@ const AdminDashboard = () => {
                 .admin-anime-card img { width: 100%; height: 180px; object-fit: cover; }
                 .card-controls { padding: 8px; display: flex; justify-content: space-between; align-items: center; }
                 .card-controls h4 { font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+                @keyframes shimmer {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
+                }
             `}</style>
         </div>
     );

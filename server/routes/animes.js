@@ -15,13 +15,18 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
+    params: async (req, file) => ({
         folder: 'otakuzone_animes',
-        resource_type: 'auto', // Important for videos
-    },
+        resource_type: file.mimetype.startsWith('video') ? 'video' : 'image',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'mkv', 'avi', 'mov', 'webm'],
+    }),
 });
 
-const upload = multer({ storage });
+// 500MB limit for videos
+const upload = multer({ 
+    storage,
+    limits: { fileSize: 500 * 1024 * 1024 }
+});
 
 // Get all animes
 router.get('/', async (req, res) => {
@@ -30,6 +35,24 @@ router.get('/', async (req, res) => {
         res.json(animes);
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+});
+
+// ⚠️ IMPORTANT: /upload MUST come BEFORE /:id to avoid Express routing conflict
+// Upload Video/Image to Cloudinary
+router.post('/upload', protect, admin, upload.single('file'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'Nenhum ficheiro recebido.' });
+        }
+        res.json({ 
+            url: req.file.path,
+            public_id: req.file.filename,
+            resource_type: req.file.mimetype?.startsWith('video') ? 'video' : 'image'
+        });
+    } catch (error) {
+        console.error('Upload error:', error);
+        res.status(500).json({ message: `Erro no upload: ${error.message}` });
     }
 });
 
@@ -50,15 +73,6 @@ router.post('/', protect, admin, async (req, res) => {
         const anime = new Anime(req.body);
         const createdAnime = await anime.save();
         res.status(201).json(createdAnime);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-});
-
-// Upload Video/Image to Cloudinary
-router.post('/upload', protect, admin, upload.single('file'), async (req, res) => {
-    try {
-        res.json({ url: req.file.path });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
