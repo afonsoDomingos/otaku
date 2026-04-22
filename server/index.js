@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const https = require('https');
 
 // Load env from server directory (for local dev)
 require('dotenv').config({ path: path.join(__dirname, '.env') });
@@ -62,6 +63,17 @@ app.use('/', apiRouter);
 const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
     app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+}
+
+// Keep-Alive Logic for Render (Self-ping every 14 minutes)
+if (process.env.SERVER_URL) {
+    setInterval(() => {
+        https.get(process.env.SERVER_URL + '/api/ping', (res) => {
+            console.log(`Self-ping (keep-alive) status: ${res.statusCode}`);
+        }).on('error', (err) => {
+            console.error('Self-ping failed:', err.message);
+        });
+    }, 14 * 60 * 1000); 
 }
 
 module.exports = app;

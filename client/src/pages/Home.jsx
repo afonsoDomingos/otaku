@@ -16,9 +16,9 @@ const Home = () => {
     const [guests, setGuests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeHero, setActiveHero] = useState(0);
-    const [showPartnerModal, setShowPartnerModal] = useState(false);
     const [partnerForm, setPartnerForm] = useState({ companyName: '', contactEmail: '', proposal: '' });
     const [partnerStatus, setPartnerStatus] = useState('');
+    const [isSlow, setIsSlow] = useState(false);
     
     const [reviews, setReviews] = useState([]);
     const [showReviewModal, setShowReviewModal] = useState(false);
@@ -58,6 +58,10 @@ const Home = () => {
 
     useEffect(() => {
         fetchData();
+        const timer = setTimeout(() => {
+            if (loading) setIsSlow(true);
+        }, 5000);
+        return () => clearTimeout(timer);
     }, []);
 
     useEffect(() => {
@@ -133,11 +137,15 @@ const Home = () => {
 
     if (loading) return (
         <div className="skeleton-container">
-            <div className="skeleton-hero"></div>
+            <div className="loading-feedback">
+                <div className="spinner"></div>
+                <p>{isSlow ? "O servidor está a acordar... Só mais um momento ☕" : "A sincronizar com o Universo Otaku..."}</p>
+            </div>
             <style>{`
-                .skeleton-container { padding-top: 70px; background: #141414; min-height: 100vh; }
-                .skeleton-hero { height: 80vh; background: #222; animation: pulse 1.5s infinite; }
-                @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 0.8; } 100% { opacity: 0.5; } }
+                .skeleton-container { padding-top: 70px; background: #141414; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+                .loading-feedback { text-align: center; color: white; }
+                .spinner { width: 40px; height: 40px; border: 3px solid rgba(229, 9, 20, 0.1); border-top-color: #E50914; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+                @keyframes spin { to { transform: rotate(360deg); } }
             `}</style>
         </div>
     );
