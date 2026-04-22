@@ -10,7 +10,12 @@ const Navbar = () => {
     const { searchQuery, setSearchQuery } = useSearch();
     const [isScrolled, setIsScrolled] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
+    const [imgError, setImgError] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        setImgError(false); // Reset error when user changes
+    }, [user]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -61,7 +66,18 @@ const Navbar = () => {
                 {user ? (
                     <div className="user-menu">
                         <div className="nav-avatar-wrapper">
-                            <img src={user.profilePic || 'https://via.placeholder.com/150'} alt="Profile" className="nav-avatar" />
+                            {!imgError && user.profilePic ? (
+                                <img 
+                                    src={user.profilePic} 
+                                    alt="Profile" 
+                                    className="nav-avatar" 
+                                    onError={() => setImgError(true)}
+                                />
+                            ) : (
+                                <div className="nav-avatar-fallback">
+                                    <User size={16} />
+                                </div>
+                            )}
                         </div>
                         <div className="dropdown">
                             <p>{user.name}</p>
@@ -184,6 +200,15 @@ const Navbar = () => {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
+                }
+                .nav-avatar-fallback {
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: #333;
+                    color: #fff;
                 }
                 .user-menu {
                     position: relative;
