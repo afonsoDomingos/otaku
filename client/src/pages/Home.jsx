@@ -24,6 +24,7 @@ const Home = () => {
     const [showReviewModal, setShowReviewModal] = useState(false);
     const [reviewForm, setReviewForm] = useState({ name: '', anime: '', comment: '' });
     const [reviewStatus, setReviewStatus] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('Todos');
 
     const fetchData = async () => {
         try {
@@ -291,11 +292,33 @@ const Home = () => {
                             </div>
                         )}
 
-                        {categories.map(cat => (
-                            <div key={cat} className="row-container">
-                                <h2 className="row-title">{cat}</h2>
-                                <div className="row-scroll">
-                                    {animes.filter(a => a.category === cat).map(anime => (
+                        {/* Category Filter & Grid */}
+                        <section className="catalog-section container" style={{ padding: '40px 0' }}>
+                            <div className="filter-header" style={{ marginBottom: '30px' }}>
+                                <h2 className="row-title" style={{ display: 'block', marginBottom: '20px' }}>Catálogo de Animes</h2>
+                                <div className="category-tabs">
+                                    <button 
+                                        className={`cat-tab ${selectedCategory === 'Todos' ? 'active' : ''}`}
+                                        onClick={() => setSelectedCategory('Todos')}
+                                    >
+                                        Todos
+                                    </button>
+                                    {categories.map(cat => (
+                                        <button 
+                                            key={cat}
+                                            className={`cat-tab ${selectedCategory === cat ? 'active' : ''}`}
+                                            onClick={() => setSelectedCategory(cat)}
+                                        >
+                                            {cat}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="catalog-grid">
+                                {animes
+                                    .filter(a => selectedCategory === 'Todos' || a.category === selectedCategory)
+                                    .map(anime => (
                                         <Link to={`/anime/${anime._id}`} key={anime._id} className="anime-card">
                                             <img src={anime.thumbnail} alt={anime.title} />
                                             <div className="anime-card-info">
@@ -303,10 +326,10 @@ const Home = () => {
                                                 <p>{anime.seasons?.length || 0} Temporadas</p>
                                             </div>
                                         </Link>
-                                    ))}
-                                </div>
+                                    ))
+                                }
                             </div>
-                        ))}
+                        </section>
 
                         <section className="about-otaku-section container" style={{marginTop: '60px'}}>
                             <div className="about-grid">
@@ -594,9 +617,47 @@ const Home = () => {
                 .row-scroll { display: flex; gap: 20px; overflow-x: auto; padding: 10px 0 30px; scrollbar-width: none; mask-image: linear-gradient(to right, black 85%, transparent 100%); }
                 .row-scroll::-webkit-scrollbar { display: none; }
 
-                .anime-card { flex: 0 0 240px; position: relative; border-radius: 8px; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+                 .anime-card { flex: 0 0 240px; position: relative; border-radius: 8px; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
                 .anime-card:hover { transform: scale(1.1) translateY(-10px); z-index: 10; box-shadow: 0 15px 30px rgba(229, 9, 20, 0.3); }
                 .anime-card img { width: 100%; height: 360px; object-fit: cover; }
+                
+                /* Catalog Grid */
+                .catalog-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                    gap: 30px 20px;
+                    padding: 20px 0;
+                }
+                .catalog-grid .anime-card {
+                    flex: none;
+                    width: 100%;
+                }
+                .catalog-grid .anime-card img {
+                    height: 300px;
+                }
+
+                .category-tabs {
+                    display: flex;
+                    gap: 12px;
+                    overflow-x: auto;
+                    padding-bottom: 10px;
+                    scrollbar-width: none;
+                }
+                .category-tabs::-webkit-scrollbar { display: none; }
+                
+                .cat-tab {
+                    background: rgba(255,255,255,0.05);
+                    border: 1px solid rgba(255,255,255,0.1);
+                    color: #888;
+                    padding: 8px 20px;
+                    border-radius: 20px;
+                    cursor: pointer;
+                    white-space: nowrap;
+                    font-weight: 600;
+                    transition: all 0.3s;
+                }
+                .cat-tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
+                .cat-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 0 15px rgba(229, 9, 20, 0.4); }
                 
                 .anime-card-info { 
                     position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px 15px; 
