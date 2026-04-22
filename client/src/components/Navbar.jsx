@@ -89,9 +89,11 @@ const Navbar = () => {
                     font-weight: 800;
                     color: var(--primary);
                     margin-right: 25px;
+                    text-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
                 }
                 .logo span {
                     color: white;
+                    text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
                 }
                 .nav-left {
                     display: flex;
@@ -102,12 +104,39 @@ const Navbar = () => {
                     gap: 20px;
                 }
                 .nav-links a {
-                    font-size: 0.9rem;
+                    font-size: 0.95rem;
                     color: #e5e5e5;
-                    transition: color 0.2s;
+                    transition: all 0.3s;
+                    position: relative;
+                    padding: 5px 0;
+                    font-weight: 500;
+                }
+                .nav-links a::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 2px;
+                    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+                    background-size: 200% 100%;
+                    animation: katana-slash 3s linear infinite;
+                    opacity: 0.4;
+                    border-radius: 2px;
+                }
+                @keyframes katana-slash {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
                 }
                 .nav-links a:hover {
-                    color: #b3b3b3;
+                    color: #fff;
+                    text-shadow: 0 0 12px rgba(229, 9, 20, 0.8);
+                }
+                .nav-links a:hover::after {
+                    animation-play-state: paused;
+                    opacity: 1;
+                    background: var(--primary);
+                    box-shadow: 0 0 8px var(--primary);
                 }
                 .nav-right {
                     display: flex;

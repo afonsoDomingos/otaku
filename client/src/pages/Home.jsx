@@ -73,7 +73,7 @@ const Home = () => {
                         <div 
                             key={anime._id} 
                             className={`hero-slide ${index === activeHero ? 'active' : ''}`}
-                            style={{ backgroundImage: `linear-gradient(to top, #141414, transparent 50%), linear-gradient(to right, #141414 30%, transparent), url(${anime.thumbnail})` }}
+                            style={{ backgroundImage: `linear-gradient(to top, #080808, transparent 50%), linear-gradient(to right, #080808 30%, transparent), url(${anime.thumbnail})` }}
                         >
                             <div className="hero-content">
                                 <div className="featured-badge">
@@ -215,7 +215,7 @@ const Home = () => {
                         <section className="about-otaku-section container" style={{marginTop: '60px'}}>
                             <div className="about-grid">
                                 <div className="about-image">
-                                    <img src="/images/OTAKU.png" alt="Bem-vindo Otaku" />
+                                    <img src="/images/otakumeuperfil.jpg" alt="Bem-vindo Otaku" className="otaku-profile-img" />
                                 </div>
                                 <div className="about-text">
                                     <div className="badge">SOBRE NÓS</div>
@@ -244,7 +244,7 @@ const Home = () => {
             <Footer />
 
             <style>{`
-                .home-page { background: #141414; min-height: 100vh; color: white; }
+                .home-page { background: transparent; min-height: 100vh; color: white; }
                 .hero-carousel { position: relative; height: 90vh; overflow: hidden; margin-bottom: -150px; }
                 .hero-slide {
                     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -263,9 +263,9 @@ const Home = () => {
                 .hero-btns { display: flex; gap: 15px; }
                 .carousel-indicators { position: absolute; bottom: 200px; left: 4%; display: flex; gap: 12px; z-index: 10; }
                 .indicator { width: 35px; height: 3px; background: rgba(255,255,255,0.25); cursor: pointer; border-radius: 2px; transition: 0.4s; }
-                .indicator.active { background: #E50914; width: 60px; }
+                .indicator.active { background: #E50914; width: 60px; box-shadow: 0 0 10px #E50914; }
                 /* Cinematic Rows */
-                .main-content { position: relative; z-index: 5; margin-top: -10vw; padding-bottom: 100px; background: linear-gradient(to bottom, transparent, #141414 5%); }
+                .main-content { position: relative; z-index: 5; margin-top: -10vw; padding-bottom: 100px; background: linear-gradient(to bottom, transparent, #080808 5%); }
                 .row-container { padding-left: 4%; margin-bottom: 50px; }
                 .row-title { font-size: 1.8rem; margin-bottom: 25px; font-weight: 800; color: #fff; letter-spacing: -0.5px; position: relative; display: inline-block; }
                 .row-title::after { content: ''; position: absolute; left: 0; bottom: -8px; width: 40px; height: 3px; background: #E50914; border-radius: 2px; }
@@ -336,15 +336,22 @@ const Home = () => {
 
                 .about-otaku-section { padding: 100px 0; border-top: 1px solid #222; }
                 .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-                .about-image img { 
+                .otaku-profile-img { 
                     width: 100%; 
                     height: 550px; 
                     object-fit: cover; 
                     object-position: top; 
                     border-radius: 12px; 
-                    box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
+                    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                    border: 1px solid transparent;
                 }
-                .about-text h2 { font-size: 2.5rem; margin: 20px 0; font-weight: 800; }
+                .otaku-profile-img:hover {
+                    transform: scale(1.02) translateY(-10px);
+                    box-shadow: 0 30px 60px rgba(229, 9, 20, 0.4);
+                    border-color: rgba(229, 9, 20, 0.6);
+                }
+                .about-text h2 { font-size: 2.5rem; margin: 20px 0; font-weight: 800; text-shadow: 0 0 10px rgba(229, 9, 20, 0.2); }
                 .about-text p { font-size: 1.1rem; color: #aaa; line-height: 1.8; margin-bottom: 20px; }
                 .badge { background: #E50914; color: white; padding: 5px 12px; font-weight: bold; border-radius: 4px; font-size: 0.85rem; width: fit-content; }
             `}</style>
