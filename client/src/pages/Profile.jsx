@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import API from '../api';
-import { Camera, User, Mail, Lock, Save, ArrowLeft } from 'lucide-react';
+import { Camera, User, Mail, Lock, Save, ArrowLeft, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
@@ -10,12 +10,18 @@ const Profile = () => {
     const navigate = useNavigate();
     const [name, setName] = useState(user?.name || '');
     const [email, setEmail] = useState(user?.email || '');
+    const [country, setCountry] = useState(user?.country || 'Moçambique');
     const [password, setPassword] = useState('');
     const [profilePic, setProfilePic] = useState(null);
     const [preview, setPreview] = useState(user?.profilePic || '');
     const [imgError, setImgError] = useState(false);
     const [loading, setLoading] = useState(false);
     const { showToast } = useToast();
+
+    const countries = [
+        "Moçambique", "Angola", "Portugal", "Brasil", "Cabo Verde", 
+        "Guiné-Bissau", "São Tomé e Príncipe", "África do Sul", "Outro"
+    ];
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -32,6 +38,7 @@ const Profile = () => {
         const formData = new FormData();
         formData.append('name', name);
         formData.append('email', email);
+        formData.append('country', country);
         if (password) formData.append('password', password);
         if (profilePic) formData.append('profilePic', profilePic);
 
@@ -39,7 +46,7 @@ const Profile = () => {
             const { data } = await API.put('/auth/profile', formData);
             setUser(data);
             localStorage.setItem('user', JSON.stringify(data));
-            showToast("Perfil atualizado com sucesso!");
+            showToast("Perfil atualizado com sucesso!", "success");
         } catch (error) {
             console.error("Erro ao atualizar perfil:", error.response?.data || error);
             showToast(error.response?.data?.message || "Erro ao atualizar perfil. Verifique se a imagem não é muito grande.", "error");
@@ -90,8 +97,22 @@ const Profile = () => {
                             <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="seu@email.com" />
                         </div>
 
-                        <div className="input-group full-width">
-                            <label><Lock size={18} /> Nova Senha (deixe vazio para manter)</label>
+                        <div className="input-group">
+                            <label><Globe size={18} /> País</label>
+                            <select 
+                                value={country} 
+                                onChange={(e) => setCountry(e.target.value)}
+                                style={{
+                                    padding: '15px 20px', background: 'rgba(0,0,0,0.3)', border: '1px solid #444', 
+                                    borderRadius: '10px', color: '#fff', fontSize: '1rem', outline: 'none'
+                                }}
+                            >
+                                {countries.map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                        </div>
+
+                        <div className="input-group">
+                            <label><Lock size={18} /> Nova Senha (manter atual se vazio)</label>
                             <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
                         </div>
                     </div>
@@ -123,41 +144,19 @@ const Profile = () => {
 
                 .profile-form { display: flex; flex-direction: column; gap: 30px; }
                 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-                .input-group.full-width { grid-column: span 2; }
                 
                 .input-group { display: flex; flex-direction: column; gap: 10px; }
                 .input-group label { display: flex; align-items: center; gap: 10px; color: #aaa; font-size: 0.95rem; font-weight: 700; margin-left: 5px; }
-                .input-group input { padding: 15px 20px; background: rgba(0,0,0,0.3); border: 1px solid #444; border-radius: 10px; color: #fff; font-size: 1rem; outline: none; transition: all 0.3s; }
-                .input-group input:focus { border-color: var(--primary); background: #000; box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.1); }
+                .input-group input, .input-group select { padding: 15px 20px; background: rgba(0,0,0,0.3); border: 1px solid #444; border-radius: 10px; color: #fff; font-size: 1rem; outline: none; transition: all 0.3s; }
+                .input-group input:focus, .input-group select:focus { border-color: var(--primary); background: #000; box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.1); }
+                .input-group select option { background: #181818; }
 
                 .save-btn { margin-top: 15px; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
                 .save-btn:hover:not(:disabled) { background: #ff1f1f; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(229, 9, 20, 0.4); }
                 .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-                .notification-toast {
-                    position: fixed;
-                    top: 90px;
-                    right: 40px;
-                    padding: 18px 30px;
-                    background: #222;
-                    color: white;
-                    border-radius: 12px;
-                    border-left: 5px solid #4ade80;
-                    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-                    z-index: 10000;
-                    animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                    font-weight: 600;
-                }
-                .notification-toast.error { border-left-color: #ff4444; }
-                
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-
                 @media (max-width: 600px) {
                     .form-grid { grid-template-columns: 1fr; }
-                    .input-group.full-width { grid-column: span 1; }
                     .profile-container { padding: 30px 20px; }
                     .profile-header h1 { font-size: 2rem; }
                 }

@@ -105,6 +105,7 @@ router.put('/profile', protect, upload.single('profilePic'), async (req, res) =>
         if (user) {
             user.name = req.body.name || user.name;
             user.email = req.body.email || user.email;
+            user.country = req.body.country || user.country;
             if (req.body.password) {
                 user.password = req.body.password;
             }
@@ -117,6 +118,7 @@ router.put('/profile', protect, upload.single('profilePic'), async (req, res) =>
                 name: updatedUser.name,
                 email: updatedUser.email,
                 role: updatedUser.role,
+                country: updatedUser.country,
                 profilePic: updatedUser.profilePic,
                 token: generateToken(updatedUser._id)
             });
