@@ -19,7 +19,7 @@ const AdminDashboard = () => {
     });
     const [newManga, setNewManga] = useState({ title: '', description: '', thumbnail: '', author: '', genre: '', price: 0, chapters: [] });
     const [newShort, setNewShort] = useState({ title: '', url: '' });
-    const [newGuest, setNewGuest] = useState({ name: '', photo: '', role: 'Convidado Especial' });
+    const [newGuest, setNewGuest] = useState({ name: '', photo: '', role: 'Convidado Especial', podcastUrl: '' });
     const [editingGuestId, setEditingGuestId] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [processing, setProcessing] = useState(false);
@@ -142,14 +142,14 @@ const AdminDashboard = () => {
             } else {
                 await API.post('/guests', newGuest);
             }
-            setNewGuest({ name: '', photo: '', role: 'Convidado Especial' });
+            setNewGuest({ name: '', photo: '', role: 'Convidado Especial', podcastUrl: '' });
             setEditingGuestId(null);
             fetchData();
         } catch (error) { alert("Erro ao guardar convidado."); }
     };
 
     const handleEditGuestClick = (guest) => {
-        setNewGuest({ name: guest.name, photo: guest.photo, role: guest.role });
+        setNewGuest({ name: guest.name, photo: guest.photo, role: guest.role, podcastUrl: guest.podcastUrl || '' });
         setEditingGuestId(guest._id);
     };
 
@@ -507,6 +507,7 @@ const AdminDashboard = () => {
                                 </label>
                             </div>
                             <input placeholder="Papel (Ex: Convidado Especial)" value={newGuest.role} onChange={e => setNewGuest({...newGuest, role: e.target.value})} style={{padding: '10px', background: '#111', border: '1px solid #333', color: 'white', borderRadius: '4px'}} />
+                            <input placeholder="Link do Episódio (YouTube)" value={newGuest.podcastUrl} onChange={e => setNewGuest({...newGuest, podcastUrl: e.target.value})} style={{padding: '10px', background: '#111', border: '1px solid #333', color: 'white', borderRadius: '4px'}} />
                             <div style={{display: 'flex', gap: '10px'}}>
                                 <button type="submit" style={{flex: 1, padding: '12px', background: 'var(--primary)', color: 'white', borderRadius: '4px', fontWeight: 'bold'}}>
                                     {editingGuestId ? <><Edit2 size={16} /> Atualizar</> : <><Plus size={16} /> Adicionar</>}

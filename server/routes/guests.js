@@ -32,6 +32,7 @@ router.put('/:id', protect, admin, async (req, res) => {
             guest.name = req.body.name || guest.name;
             guest.photo = req.body.photo || guest.photo;
             guest.role = req.body.role || guest.role;
+            guest.podcastUrl = req.body.podcastUrl || guest.podcastUrl;
             const updatedGuest = await guest.save();
             res.json(updatedGuest);
         } else {

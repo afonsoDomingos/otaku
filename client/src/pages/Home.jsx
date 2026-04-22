@@ -368,13 +368,23 @@ const Home = () => {
                             </div>
                             <div className="guests-grid">
                                 {guests.map((guest) => (
-                                    <div key={guest._id} className="guest-card">
+                                    <div 
+                                        key={guest._id} 
+                                        className="guest-card"
+                                        onClick={() => guest.podcastUrl && window.open(guest.podcastUrl, '_blank')}
+                                        style={{ cursor: guest.podcastUrl ? 'pointer' : 'default' }}
+                                    >
                                         <div className="guest-avatar-wrapper">
                                             <img src={guest.photo} alt={guest.name} className="guest-avatar" />
                                             <div className="guest-glow"></div>
                                         </div>
                                         <h3 className="guest-name">{guest.name}</h3>
                                         {guest.role && <p className="guest-role">{guest.role}</p>}
+                                        {guest.podcastUrl && (
+                                            <span style={{ color: 'var(--primary)', fontSize: '0.75rem', marginTop: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px', display: 'block' }}>
+                                                Ver Episódio →
+                                            </span>
+                                        )}
                                     </div>
                                 ))}
                             </div>
