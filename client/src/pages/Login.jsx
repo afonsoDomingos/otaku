@@ -31,6 +31,16 @@ const Login = () => {
                     <div className="input-group">
                         <input type="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} required />
                     </div>
+                    <div style={{ textAlign: 'right', marginBottom: '20px' }}>
+                        <a 
+                            href={`https://wa.me/258842718131?text=${encodeURIComponent(`Olá suporte OtakuZoneFlix, esqueci minha senha. Meu email é: ${email}`)}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            style={{ color: '#737373', fontSize: '0.85rem', textDecoration: 'none' }}
+                        >
+                            Esqueceu a senha?
+                        </a>
+                    </div>
                     <button type="submit" className="auth-btn">Entrar</button>
                     <div style={{marginTop: '20px', color: '#737373'}}>
                         Novo por aqui? <Link to="/register" style={{color: 'white'}}>Assine agora.</Link>
